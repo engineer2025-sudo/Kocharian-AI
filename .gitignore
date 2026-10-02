@@ -1,0 +1,10 @@
+node_modules/
+models/*.gguf
+models/whisper/
+data/
+uploads/
+vendor/
+tools/whisper.cpp/
+tmp/
+*.log
+.DS_Store

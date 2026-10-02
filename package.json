@@ -1,0 +1,21 @@
+{
+  "name": "kocharian-ai",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kocharian AI - a private, local ChatGPT-style assistant powered by an on-board Qwen GGUF model",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "models": "node scripts/models.js",
+    "setup:whisper": "bash scripts/setup-whisper.sh",
+    "setup:ocr": "bash scripts/setup-ocr.sh",
+    "setup": "npm install && npm run setup:whisper && npm run setup:ocr"
+  },
+  "dependencies": {
+    "@tesseract.js-data/eng": "^1.0.0",
+    "node-llama-cpp": "^3.22.1",
+    "pdfjs-dist": "^6.3.289",
+    "tesseract.js": "^7.0.0"
+  }
+}
