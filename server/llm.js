@@ -88,18 +88,23 @@ export async function getEngine() {
 }
 
 export function activeModelInfo() {
-  return loaded ? { id: loaded.id, path: loaded.path } : null;
+  return loaded ? { id: loaded.id, path: loaded.path, inMemoryOnly: !existsSync(loaded.path) } : null;
 }
 
 export async function ensureModel(modelId) {
   const models = await listModels({ withMeta: false });
+  // a model that is already in memory keeps working even if its file was moved or deleted
   if (!models.length) {
+    if (loaded && (!modelId || modelId === loaded.id)) return loaded.model;
     const err = new Error('NO_MODEL');
     err.code = 'NO_MODEL';
     throw err;
   }
   const target = modelId ? models.find((m) => m.id === modelId || m.name === modelId) : models.find((m) => m.id === loaded?.id) ?? models[0];
-  if (!target) throw Object.assign(new Error('MODEL_NOT_FOUND'), { code: 'MODEL_NOT_FOUND' });
+  if (!target) {
+    if (loaded && modelId === loaded.id) return loaded.model;
+    throw Object.assign(new Error('MODEL_NOT_FOUND'), { code: 'MODEL_NOT_FOUND' });
+  }
   if (loaded?.id === target.id) return loaded.model;
 
   await disposeEngine();
