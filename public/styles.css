@@ -34,7 +34,8 @@ a { color: var(--accent); }
 .ic { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .ic.small { width: 15px; height: 15px; }
 
-.app { display: flex; height: 100dvh; overflow: hidden; }
+.app { display: flex; height: var(--vvh, 100dvh); overflow: hidden; }
+.side-btn.highlight { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--text); }
 
 /* ---------- sidebar ---------- */
 .sidebar {
@@ -62,7 +63,7 @@ a { color: var(--accent); }
   background: transparent; outline: none;
 }
 .side-search input:focus { border-color: var(--border); background: var(--bg-elev); }
-.conv-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; margin: 0 -4px; padding: 0 4px; }
+.conv-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; margin: 0 -4px; padding: 0 4px; -webkit-overflow-scrolling: touch; }
 .conv-item {
   display: flex; align-items: center; gap: 8px; padding: 9px 10px; border-radius: 9px; cursor: pointer;
   color: var(--text); border: 1px solid transparent;
@@ -109,7 +110,7 @@ a { color: var(--accent); }
 .dot.busy { background: #4f8cff; animation: pulse 1s infinite; }
 @keyframes pulse { 50% { opacity: .35; } }
 
-.messages { flex: 1; overflow-y: auto; scroll-behavior: smooth; padding: 22px 0 8px; }
+.messages { flex: 1; overflow-y: auto; scroll-behavior: smooth; padding: 22px 0 8px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
 .msg { max-width: 780px; margin: 0 auto; padding: 8px 22px; display: flex; gap: 14px; }
 .msg .avatar {
   width: 30px; height: 30px; flex: 0 0 30px; border-radius: 8px; display: grid; place-items: center; font-size: 14px; font-weight: 700;
@@ -265,6 +266,39 @@ input[type="range"] { accent-color: var(--accent); }
 .toast { background: var(--bg-elev2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; font-size: 13.5px; box-shadow: var(--shadow); max-width: 340px; animation: slidein .18s ease; }
 .toast.err { border-color: #e5484d; }
 @keyframes slidein { from { transform: translateY(8px); opacity: 0; } }
+
+/* QR / install modal */
+.qr-row { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+.qr-box {
+  background: #fff; border-radius: 16px; padding: 10px; width: 190px; height: 190px; flex: 0 0 auto;
+  display: grid; place-items: center; box-shadow: 0 6px 20px rgba(0,0,0,.28);
+}
+.qr-box img { width: 100%; height: 100%; display: block; }
+.qr-text { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 10px; }
+.qr-text p { margin: 0; font-size: 13.5px; color: var(--text-dim); }
+.url-chip {
+  display: flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 6px 8px 6px 12px; font-family: var(--mono); font-size: 12.5px; overflow: hidden;
+}
+.url-chip span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.steps { display: flex; flex-direction: column; gap: 10px; }
+.steps > div { border-left: 3px solid var(--border); padding-left: 12px; display: flex; flex-direction: column; gap: 2px; }
+.steps b { font-size: 13px; }
+.steps span { font-size: 12.5px; color: var(--text-dim); }
+.steps code { font-family: var(--mono); background: var(--bg); padding: 1px 5px; border-radius: 5px; }
+
+/* phone ergonomics */
+@media (max-width: 860px), (pointer: coarse) {
+  .composer-wrap { padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .topbar { padding-top: max(9px, env(safe-area-inset-top, 0px)); }
+  .sidebar { padding-left: max(10px, env(safe-area-inset-left, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  textarea, input, select { font-size: 16px; }        /* stops iOS zooming on focus */
+  .icon-btn { width: 38px; height: 38px; }
+  .side-btn { padding: 12px 10px; }
+  .msg .avatar { width: 28px; height: 28px; flex-basis: 28px; }
+  .composer { border-radius: 22px; }
+  .send-btn { width: 38px; height: 38px; }
+}
 
 @media (max-width: 860px) {
   .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 31; transform: translateX(-100%); }

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Kocharian AI">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#063c36"/>
+      <stop offset="0.5" stop-color="#10a37f"/>
+      <stop offset="1" stop-color="#4adea4"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="115" fill="url(#g)"/>
+  <g fill="none" stroke="#fff" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M182 148 V364"/>
+    <path d="M190 258 L329 151"/>
+    <path d="M190 258 L332 363"/>
+  </g>
+  <circle cx="335" cy="148" r="46" fill="#ecfff8"/>
+  <circle cx="335" cy="148" r="22" fill="#0a5e4c"/>
+  <path d="M249 106 l13 29 29 13 -29 13 -13 29 -13 -29 -29 -13 29 -13z" fill="#ecfff8"/>
+</svg>

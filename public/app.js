@@ -831,12 +831,91 @@ async function refreshHealth() {
   if (state.health.settings) state.settings = { ...state.settings, ...state.health.settings };
 }
 
+/* ------------------------------------------------------- PWA / phone install */
+
+let deferredInstall = null;
+
+async function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  if (location.protocol !== 'https:' && !['localhost', '127.0.0.1'].includes(location.hostname)) return; // SW needs a secure context
+  try {
+    const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    reg.addEventListener('updatefound', () => {});
+  } catch (err) { console.warn('service worker registration failed:', err.message); }
+}
+
+function setupInstallPrompt() {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstall = e;
+    $('#pwaInstallBtn').hidden = false;
+    $('#installBtn').classList.add('highlight');
+  });
+  window.addEventListener('appinstalled', () => {
+    deferredInstall = null;
+    $('#pwaInstallBtn').hidden = true;
+    $('#installBtn').classList.remove('highlight');
+    toast('Installed — open Kocharian from your home screen.');
+  });
+}
+
+async function openPhoneModal() {
+  const url = $('#phoneUrl');
+  const img = $('#qrImg');
+  const note = $('#phoneNote');
+  $('#phoneModal').hidden = false;
+  url.textContent = location.origin;
+
+  let net = null;
+  try { net = await api('/api/network'); } catch { /* offline-ish */ }
+  const isLocalhost = ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
+  // prefer a LAN address when the page is opened on the computer itself
+  const target = (isLocalhost && net?.lan?.length) ? net.lan[0].url : location.origin;
+  url.textContent = target;
+  img.src = `/api/network/qr.svg?data=${encodeURIComponent(target)}`;
+  img.onerror = () => { img.replaceWith(el('div', { class: 'muted small', text: 'QR unavailable — copy the link instead.' })); };
+
+  const insecure = location.protocol !== 'https:' && !isLocalhost;
+  note.textContent = insecure
+    ? 'Heads-up: over plain http:// a phone can still browse and add the app to its home screen, but the offline cache and the automatic "Install" prompt need https (or localhost).'
+    : (net?.lan?.length ? `Other addresses: ${net.lan.map((l) => l.url).join(', ')}` : 'Only this address is reachable — the phone must be on the same network.');
+  $('#pwaInstallBtn').hidden = !deferredInstall;
+  $('#copyUrlBtn').onclick = async () => {
+    try { await navigator.clipboard.writeText(url.textContent); toast('Link copied'); }
+    catch { toast('Copy failed — select the link manually', 'err'); }
+  };
+  $('#pwaInstallBtn').onclick = async () => {
+    if (!deferredInstall) return;
+    deferredInstall.prompt();
+    const { outcome } = await deferredInstall.userChoice;
+    if (outcome === 'accepted') { toast('Installing…'); deferredInstall = null; $('#pwaInstallBtn').hidden = true; }
+  };
+  // iOS has no install prompt — nudge with the exact steps
+  if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
+    $('#pwaInstallBtn').hidden = true;
+    note.textContent = 'On iPhone: tap Share ⬆ in Safari, then "Add to Home Screen".';
+  }
+}
+
 /* ------------------------------------------------------------------- boot */
 
 function autoGrow() {
   const ta = $('#input');
   ta.style.height = 'auto';
   ta.style.height = Math.min(ta.scrollHeight, 220) + 'px';
+}
+
+/** Keep the composer above the on-screen keyboard (iOS/Android). */
+function setupViewportFix() {
+  const vv = window.visualViewport;
+  if (!vv) return;
+  const sync = () => {
+    document.documentElement.style.setProperty('--vvh', `${Math.round(vv.height)}px`);
+    if (document.activeElement?.id === 'input') setTimeout(() => scrollToBottom(true), 60);
+  };
+  vv.addEventListener('resize', sync);
+  vv.addEventListener('scroll', sync);
+  sync();
 }
 
 function applyTheme(theme) {
@@ -863,6 +942,7 @@ async function boot() {
   });
   $('#attachBtn').onclick = () => $('#filePicker').click();
   $('#libraryBtn').onclick = openLibrary;
+  $('#installBtn').onclick = openPhoneModal;
   $('#filePicker').onchange = async (e) => { for (const f of e.target.files) await uploadAttachment(f); e.target.value = ''; };
   $('#micBtn').onclick = toggleRecording;
   $('#scrollDownBtn').onclick = () => scrollToBottom(true);
@@ -951,6 +1031,15 @@ async function boot() {
   });
 
   // data
+  registerServiceWorker();
+  setupInstallPrompt();
+  setupViewportFix();
+
+  // manifest shortcuts: /?new=1 and /?panel=models
+  const params = new URLSearchParams(location.search);
+  if (params.has('new')) setTimeout(() => newChat(), 400);
+  if (params.get('panel') === 'models') setTimeout(() => { loadModels().then(() => ($('#modelsModal').hidden = false)); }, 600);
+
   await refreshHealth();
   await loadModels();
   await loadConversations();

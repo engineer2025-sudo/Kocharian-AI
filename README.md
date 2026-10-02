@@ -100,6 +100,19 @@ data/            conversations, uploaded files, settings (all local, all yours)
 | `POST` | `/api/uploads/:id/analyze` | re-run OCR / transcription for an attachment |
 | `GET` | `/api/files/:id` | serve an uploaded file |
 
+## Use it on your phone
+
+Kocharian AI is a installable PWA **and** ships a native iOS wrapper.
+
+1. Run `npm start` on your computer and open <http://localhost:3000>.
+2. Click **Get it on your phone** in the sidebar — it shows a LAN URL and a QR code.
+3. Scan it with the phone (same Wi-Fi), then
+   * **iPhone (Safari)** — Share ⬆ → *Add to Home Screen*
+   * **Android (Chrome)** — ⋮ → *Install app*
+
+Prefer a real native build? Open `ios/KocharianAI.xcodeproj` in Xcode, set your
+signing team and press Run. Full walkthrough: [docs/XCODE.md](docs/XCODE.md).
+
 ## Keyboard shortcuts
 
 `Enter` send · `Shift+Enter` newline · `Ctrl+N` new chat · `Ctrl+K` search chats · `Esc` close dialogs.

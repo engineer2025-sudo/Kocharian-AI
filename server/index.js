@@ -47,7 +47,8 @@ const MIME = {
   '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif', '.ico': 'image/x-icon', '.woff2': 'font/woff2',
   '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4', '.ogg': 'audio/ogg', '.webm': 'audio/webm',
-  '.txt': 'text/plain; charset=utf-8', '.pdf': 'application/pdf', '.map': 'application/json'
+  '.txt': 'text/plain; charset=utf-8', '.pdf': 'application/pdf', '.map': 'application/json',
+  '.webmanifest': 'application/manifest+json; charset=utf-8', '.webp2': 'image/webp'
 };
 
 async function serveStatic(req, res, urlPath) {
@@ -61,7 +62,7 @@ async function serveStatic(req, res, urlPath) {
     res.writeHead(200, {
       'content-type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream',
       'content-length': st.size,
-      'cache-control': rel === '/index.html' ? 'no-store' : 'public, max-age=60'
+      'cache-control': (rel === '/index.html' || rel === '/sw.js') ? 'no-store' : 'public, max-age=300'
     });
     await pipeline((await import('node:fs')).createReadStream(file), res);
   } catch {
@@ -263,6 +264,42 @@ const server = http.createServer(async (req, res) => {
       });
     }
     if (p === '/api/capabilities' && req.method === 'GET') return json(res, 200, localCapabilities());
+
+    /* --- phone / PWA helpers --- */
+    if (p === '/api/network' && req.method === 'GET') {
+      const nets = os.networkInterfaces();
+      const lan = [];
+      for (const [iface, addrs] of Object.entries(nets)) {
+        for (const a of addrs ?? []) {
+          if (a.family === 'IPv4' && !a.internal) lan.push({ iface, address: a.address, url: `http://${a.address}:${PORT}` });
+        }
+      }
+      lan.sort((a, b) => (a.iface.includes('wl') ? -1 : 1) - (b.iface.includes('wl') ? -1 : 1));
+      const proto = (req.headers['x-forwarded-proto'] || (req.socket.encrypted ? 'https' : 'http')).split(',')[0].trim();
+      const host = (req.headers['x-forwarded-host'] || req.headers.host || `localhost:${PORT}`).split(',')[0].trim();
+      return json(res, 200, {
+        origin: `${proto}://${host}`,
+        localhost: `http://localhost:${PORT}`,
+        lan, port: PORT,
+        secure: proto === 'https',
+        pwa: true
+      });
+    }
+    if (p === '/api/network/qr.svg' && req.method === 'GET') {
+      const data = url.searchParams.get('data') || `http://localhost:${PORT}`;
+      const size = Math.min(1024, Math.max(120, Number(url.searchParams.get('size') || 320)));
+      try {
+        const QRCode = (await import('qrcode')).default;
+        const svg = await QRCode.toString(data, {
+          type: 'svg', margin: 1, width: size, errorCorrectionLevel: 'M',
+          color: { dark: '#0b0b0bff', light: '#ffffffff' }
+        });
+        res.writeHead(200, { 'content-type': 'image/svg+xml; charset=utf-8', 'cache-control': 'public, max-age=3600' });
+        return res.end(svg);
+      } catch (err) {
+        return json(res, 500, { error: `QR generation failed: ${err?.message ?? err}` });
+      }
+    }
 
     /* --- settings --- */
     if (p === '/api/settings' && req.method === 'GET') return json(res, 200, sanitizeSettings(getSettings()));

@@ -5,7 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Kocharian AI</title>
 <meta name="description" content="Kocharian AI — a private, offline ChatGPT-style assistant powered by an on-board Qwen GGUF model." />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2310a37f'/%3E%3Ctext x='32' y='44' font-size='34' font-family='system-ui' font-weight='700' fill='white' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E" />
+<meta name="color-scheme" content="dark light" />
+<meta name="theme-color" content="#212121" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Kocharian" />
+<meta name="application-name" content="Kocharian AI" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+<link rel="mask-icon" href="/icons/icon.svg" color="#10a37f" />
 <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
@@ -45,6 +57,10 @@
       <button class="side-btn" id="settingsBtn">
         <svg viewBox="0 0 24 24" class="ic"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>
         <span>Settings</span>
+      </button>
+      <button class="side-btn" id="installBtn">
+        <svg viewBox="0 0 24 24" class="ic"><rect x="6" y="2.5" width="12" height="19" rx="2.6"/><path d="M10.5 18.6h3"/><path d="M12 6.2v7M9.4 10.8L12 13.4l2.6-2.6"/></svg>
+        <span>Get it on your phone</span>
       </button>
       <button class="side-btn" id="themeBtn">
         <svg viewBox="0 0 24 24" class="ic"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
@@ -199,6 +215,31 @@
   <div class="modal-card wide viewer">
     <header class="modal-head"><h2 id="viewerTitle">Attachment</h2><button class="icon-btn" data-close><svg viewBox="0 0 24 24" class="ic"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
     <div class="modal-body" id="viewerBody"></div>
+  </div>
+</div>
+
+<div class="modal" id="phoneModal" hidden>
+  <div class="modal-card">
+    <header class="modal-head">
+      <h2>Get Kocharian on your phone</h2>
+      <button class="icon-btn" data-close><svg viewBox="0 0 24 24" class="ic"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="qr-row">
+        <div class="qr-box"><img id="qrImg" alt="QR code for this app" /></div>
+        <div class="qr-text">
+          <p><b>Scan this with your phone camera</b> — the app opens in your phone's browser with the same local server, your chats and your on-board model.</p>
+          <div class="url-chip"><span id="phoneUrl">…</span><button class="btn small ghost" id="copyUrlBtn">Copy</button></div>
+          <button class="btn" id="pwaInstallBtn" hidden>Install app</button>
+        </div>
+      </div>
+      <div class="steps">
+        <div><b>Android / Chrome</b><span>Menu <b>⋮</b> → <b>Add to Home screen</b> (or the <b>Install app</b> button above). The Kocharian icon lands on your home screen and opens full-screen.</span></div>
+        <div><b>iPhone / iPad</b><span>Open in <b>Safari</b> → Share <b>⬆</b> → <b>Add to Home Screen</b> → Add. It gets the same icon and runs full-screen.</span></div>
+        <div><b>Running the server yourself?</b><span>Start it on your computer (<code>npm start</code>), then scan the QR while both devices are on the same Wi-Fi. The modal shows your LAN address automatically.</span></div>
+      </div>
+      <p class="muted small" id="phoneNote"></p>
+    </div>
   </div>
 </div>
 

@@ -16,6 +16,7 @@
     "@tesseract.js-data/eng": "^1.0.0",
     "node-llama-cpp": "^3.22.1",
     "pdfjs-dist": "^6.3.289",
+    "qrcode": "^1.5.4",
     "tesseract.js": "^7.0.0"
   }
 }
