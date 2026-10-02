@@ -1,31 +1,26 @@
 import SwiftUI
-import UIKit
 
-/// Kocharian AI — a thin native shell around the local Kocharian AI server.
+/// Kocharian AI — a fully native SwiftUI chat app.
 ///
-/// The app itself contains no model: it connects to the Kocharian AI server
-/// running on your computer (`npm start`) over your Wi-Fi network, so every
-/// chat, image and audio file still stays on hardware you own.
+/// * Answers come from Apple's on-device foundation model (iOS 26+), or from
+///   the Kocharian AI server running the Qwen 1.5B GGUF model on your computer.
+/// * Photos are read with Vision OCR, voice notes with the Speech framework,
+///   documents with PDFKit — all on the device.
 @main
 struct KocharianAIApp: App {
+    @StateObject private var store = ChatStore()
+    @StateObject private var settings = AppSettings()
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .preferredColorScheme(nil)
+            RootView()
+                .environmentObject(store)
+                .environmentObject(settings)
+                .tint(Theme.accent)
         }
-    }
-}
-
-/// Shake the device to re-open the server settings sheet.
-extension UIDevice {
-    static let deviceDidShakeNotification = Notification.Name("deviceDidShake")
-}
-
-extension UIWindow {
-    open override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        super.motionEnded(motion, with: event)
-        if motion == .motionShake {
-            NotificationCenter.default.post(name: UIDevice.deviceDidShakeNotification, object: nil)
+        .onChange(of: scenePhase) { phase in
+            if phase != .active { store.saveNow() }
         }
     }
 }

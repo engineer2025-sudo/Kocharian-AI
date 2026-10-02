@@ -7,23 +7,55 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B10000000000000000000001 /* KocharianAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000001 /* KocharianAIApp.swift */; };
-		B10000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000002 /* ContentView.swift */; };
-		B10000000000000000000003 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000003 /* WebView.swift */; };
-		B10000000000000000000004 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000004 /* Assets.xcassets */; };
+		02B14070F83FAED72B7F8B41 /* ChatStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5E8FCF3AFA204C67BE418F /* ChatStore.swift */; };
+		02C578C72E8D9BC681635747 /* KocharianServerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0211159360481FED726B9256 /* KocharianServerEngine.swift */; };
+		0B52E5E5E74436488A5E8E03 /* AppleIntelligenceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103B1C4B1244EA9DF8D43A03 /* AppleIntelligenceEngine.swift */; };
+		0D7A06D17D1D5E65E712F178 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6F0E859BD63AA799627BD8 /* SettingsView.swift */; };
+		1BB8E4A8EF14595F39E91CE8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8703406E9B80F661A813DA6 /* Assets.xcassets */; };
+		2BB4C9796B3EBA307FBE4E9C /* KocharianAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4581536D10F99F5A3539D6A2 /* KocharianAIApp.swift */; };
+		4729425DB0A2DBBC269692FC /* MessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38456AE8ED4F1660441D9A70 /* MessageRow.swift */; };
+		4A43E1ACC4793C3D8FDFD894 /* ChatModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64A057738B919C48F7C21974 /* ChatModels.swift */; };
+		53BC3D1FE2BAF011C2FAAA6A /* ConversationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70922299D6A59CFB10D8912E /* ConversationListView.swift */; };
+		55136F265CA6E1D7858ABB26 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCB588143DF4371699E88FE /* AppSettings.swift */; };
+		857B8717E868CED1DA366D90 /* CameraPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A09A5E148184088A154415 /* CameraPicker.swift */; };
+		8DA33367A317E0D7D0203119 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441850121752A33E8D3BCCE8 /* ChatViewModel.swift */; };
+		AFB5DDCA35CB854818F5A849 /* MarkdownText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3A28CA728F573327A62D86 /* MarkdownText.swift */; };
+		BB74A6ED663703C43778A725 /* ComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0729F294CB8193FC738B861 /* ComposerView.swift */; };
+		C7CA6DC8384F402850556B60 /* AttachmentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3744DB36BE96BD762A30B386 /* AttachmentService.swift */; };
+		D372152082BBCF5A72EC5E23 /* ChatEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379D85B4CAE4A72A50799120 /* ChatEngine.swift */; };
+		DDDD5713608C88D42AEBB65D /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA4AF64DBA76B74A21594A7 /* ChatView.swift */; };
+		EDF3EA4D8F7644A50087CEF1 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F419B7D690364717B6C8349 /* RootView.swift */; };
+		F5C185B32C093F4C1946A297 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75EE006F0824875CF3A4108 /* AudioRecorder.swift */; };
+		F7CE9283A5594A5EDB64DD78 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA986703D0F01EA5E37FFBF /* Theme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F10000000000000000000000 /* Kocharian AI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kocharian AI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F10000000000000000000001 /* KocharianAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KocharianAIApp.swift; sourceTree = "<group>"; };
-		F10000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		F10000000000000000000003 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
-		F10000000000000000000004 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F10000000000000000000005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9F2F4844D55C58D3EBEF821A /* Kocharian AI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kocharian AI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0211159360481FED726B9256 /* KocharianServerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KocharianServerEngine.swift; sourceTree = "<group>"; };
+		103B1C4B1244EA9DF8D43A03 /* AppleIntelligenceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceEngine.swift; sourceTree = "<group>"; };
+		2AA986703D0F01EA5E37FFBF /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		3744DB36BE96BD762A30B386 /* AttachmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentService.swift; sourceTree = "<group>"; };
+		379D85B4CAE4A72A50799120 /* ChatEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEngine.swift; sourceTree = "<group>"; };
+		38456AE8ED4F1660441D9A70 /* MessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRow.swift; sourceTree = "<group>"; };
+		441850121752A33E8D3BCCE8 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		4581536D10F99F5A3539D6A2 /* KocharianAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KocharianAIApp.swift; sourceTree = "<group>"; };
+		4BCB588143DF4371699E88FE /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		4E3A28CA728F573327A62D86 /* MarkdownText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownText.swift; sourceTree = "<group>"; };
+		64A057738B919C48F7C21974 /* ChatModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModels.swift; sourceTree = "<group>"; };
+		6B6F0E859BD63AA799627BD8 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		70922299D6A59CFB10D8912E /* ConversationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationListView.swift; sourceTree = "<group>"; };
+		8F419B7D690364717B6C8349 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		9E5E8FCF3AFA204C67BE418F /* ChatStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatStore.swift; sourceTree = "<group>"; };
+		B0729F294CB8193FC738B861 /* ComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerView.swift; sourceTree = "<group>"; };
+		C3A09A5E148184088A154415 /* CameraPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPicker.swift; sourceTree = "<group>"; };
+		CC637901ACFE841FF5877B6C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D8703406E9B80F661A813DA6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E75EE006F0824875CF3A4108 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
+		ECA4AF64DBA76B74A21594A7 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		P10000000000000000000003 /* Frameworks */ = {
+		9709618270A75A2FDB35D051 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -33,30 +65,78 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		G10000000000000000000000 = {
+		7D6E548615255C4C675160C6 = {
 			isa = PBXGroup;
 			children = (
-				G10000000000000000000001 /* KocharianAI */,
-				G10000000000000000000002 /* Products */,
+				E7E7A0CB120E462FB6AE567C /* KocharianAI */,
+				F35C4FA2369B02EA55615EFC /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		G10000000000000000000001 /* KocharianAI */ = {
+		E7E7A0CB120E462FB6AE567C /* KocharianAI */ = {
 			isa = PBXGroup;
 			children = (
-				F10000000000000000000001 /* KocharianAIApp.swift */,
-				F10000000000000000000002 /* ContentView.swift */,
-				F10000000000000000000003 /* WebView.swift */,
-				F10000000000000000000004 /* Assets.xcassets */,
-				F10000000000000000000005 /* Info.plist */,
+				F72CC3E3E10B9A253EDAB8C0 /* Engines */,
+				E495F927DDF1552C7E91BF64 /* Models */,
+				254F45A960FD7BBEFB5A69EA /* Services */,
+				3CFFCE6CA245ADF5FC27600D /* Views */,
+				4581536D10F99F5A3539D6A2 /* KocharianAIApp.swift */,
+				D8703406E9B80F661A813DA6 /* Assets.xcassets */,
+				CC637901ACFE841FF5877B6C /* Info.plist */,
 			);
 			path = KocharianAI;
 			sourceTree = "<group>";
 		};
-		G10000000000000000000002 /* Products */ = {
+		F72CC3E3E10B9A253EDAB8C0 /* Engines */ = {
 			isa = PBXGroup;
 			children = (
-				F10000000000000000000000 /* Kocharian AI.app */,
+				0211159360481FED726B9256 /* KocharianServerEngine.swift */,
+				103B1C4B1244EA9DF8D43A03 /* AppleIntelligenceEngine.swift */,
+				379D85B4CAE4A72A50799120 /* ChatEngine.swift */,
+			);
+			path = Engines;
+			sourceTree = "<group>";
+		};
+		E495F927DDF1552C7E91BF64 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				441850121752A33E8D3BCCE8 /* ChatViewModel.swift */,
+				4BCB588143DF4371699E88FE /* AppSettings.swift */,
+				64A057738B919C48F7C21974 /* ChatModels.swift */,
+				9E5E8FCF3AFA204C67BE418F /* ChatStore.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		254F45A960FD7BBEFB5A69EA /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				3744DB36BE96BD762A30B386 /* AttachmentService.swift */,
+				E75EE006F0824875CF3A4108 /* AudioRecorder.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		3CFFCE6CA245ADF5FC27600D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2AA986703D0F01EA5E37FFBF /* Theme.swift */,
+				38456AE8ED4F1660441D9A70 /* MessageRow.swift */,
+				4E3A28CA728F573327A62D86 /* MarkdownText.swift */,
+				6B6F0E859BD63AA799627BD8 /* SettingsView.swift */,
+				70922299D6A59CFB10D8912E /* ConversationListView.swift */,
+				8F419B7D690364717B6C8349 /* RootView.swift */,
+				B0729F294CB8193FC738B861 /* ComposerView.swift */,
+				C3A09A5E148184088A154415 /* CameraPicker.swift */,
+				ECA4AF64DBA76B74A21594A7 /* ChatView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F35C4FA2369B02EA55615EFC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9F2F4844D55C58D3EBEF821A /* Kocharian AI.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -64,13 +144,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		T10000000000000000000000 /* KocharianAI */ = {
+		04474DAD0F301DABF8AC7606 /* KocharianAI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C10000000000000000000002 /* Build configuration list for PBXNativeTarget "KocharianAI" */;
+			buildConfigurationList = AE93F00FED253E2B193381E5 /* Build configuration list for PBXNativeTarget "KocharianAI" */;
 			buildPhases = (
-				P10000000000000000000001 /* Sources */,
-				P10000000000000000000003 /* Frameworks */,
-				P10000000000000000000002 /* Resources */,
+				B5B35BC7B203F18F9C8BD011 /* Sources */,
+				9709618270A75A2FDB35D051 /* Frameworks */,
+				18B51C2D5AE17A8D4BB9DAB4 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -78,25 +158,25 @@
 			);
 			name = KocharianAI;
 			productName = KocharianAI;
-			productReference = F10000000000000000000000 /* Kocharian AI.app */;
+			productReference = 9F2F4844D55C58D3EBEF821A /* Kocharian AI.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		R10000000000000000000000 /* Project object */ = {
+		95E889D2A0737C48E183C3D2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					T10000000000000000000000 = {
-						CreatedOnToolsVersion = 15.0;
+					04474DAD0F301DABF8AC7606 = {
+						CreatedOnToolsVersion = 16.0;
 					};
 				};
 			};
-			buildConfigurationList = C10000000000000000000001 /* Build configuration list for PBXProject "KocharianAI" */;
+			buildConfigurationList = F81B57A71FEF468CE74BDB69 /* Build configuration list for PBXProject "KocharianAI" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -104,100 +184,113 @@
 				en,
 				Base,
 			);
-			mainGroup = G10000000000000000000000;
-			productRefGroup = G10000000000000000000002 /* Products */;
+			mainGroup = 7D6E548615255C4C675160C6;
+			productRefGroup = F35C4FA2369B02EA55615EFC /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				T10000000000000000000000 /* KocharianAI */,
+				04474DAD0F301DABF8AC7606 /* KocharianAI */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		P10000000000000000000002 /* Resources */ = {
+		18B51C2D5AE17A8D4BB9DAB4 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B10000000000000000000004 /* Assets.xcassets in Resources */,
+				1BB8E4A8EF14595F39E91CE8 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		P10000000000000000000001 /* Sources */ = {
+		B5B35BC7B203F18F9C8BD011 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B10000000000000000000002 /* ContentView.swift in Sources */,
-				B10000000000000000000003 /* WebView.swift in Sources */,
-				B10000000000000000000001 /* KocharianAIApp.swift in Sources */,
+				02B14070F83FAED72B7F8B41 /* ChatStore.swift in Sources */,
+				02C578C72E8D9BC681635747 /* KocharianServerEngine.swift in Sources */,
+				0B52E5E5E74436488A5E8E03 /* AppleIntelligenceEngine.swift in Sources */,
+				0D7A06D17D1D5E65E712F178 /* SettingsView.swift in Sources */,
+				2BB4C9796B3EBA307FBE4E9C /* KocharianAIApp.swift in Sources */,
+				4729425DB0A2DBBC269692FC /* MessageRow.swift in Sources */,
+				4A43E1ACC4793C3D8FDFD894 /* ChatModels.swift in Sources */,
+				53BC3D1FE2BAF011C2FAAA6A /* ConversationListView.swift in Sources */,
+				55136F265CA6E1D7858ABB26 /* AppSettings.swift in Sources */,
+				857B8717E868CED1DA366D90 /* CameraPicker.swift in Sources */,
+				8DA33367A317E0D7D0203119 /* ChatViewModel.swift in Sources */,
+				AFB5DDCA35CB854818F5A849 /* MarkdownText.swift in Sources */,
+				BB74A6ED663703C43778A725 /* ComposerView.swift in Sources */,
+				C7CA6DC8384F402850556B60 /* AttachmentService.swift in Sources */,
+				D372152082BBCF5A72EC5E23 /* ChatEngine.swift in Sources */,
+				DDDD5713608C88D42AEBB65D /* ChatView.swift in Sources */,
+				EDF3EA4D8F7644A50087CEF1 /* RootView.swift in Sources */,
+				F5C185B32C093F4C1946A297 /* AudioRecorder.swift in Sources */,
+				F7CE9283A5594A5EDB64DD78 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		X10000000000000000000001 /* Debug */ = {
+		A2AAD67E976094D975345D5A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_DYNAMIC_NO_PIC = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
-		X10000000000000000000002 /* Release */ = {
+		17E972F4C7C9039CE66D612C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				MTL_ENABLE_DEBUG_INFO = NO;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		X10000000000000000000003 /* Debug */ = {
+		5D35768437EC70D6C324A7F4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = KocharianAI/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -206,23 +299,20 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kocharian.ai;
 				PRODUCT_NAME = "Kocharian AI";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		X10000000000000000000004 /* Release */ = {
+		1C1953AF2A9BA8CA48F338D1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = KocharianAI/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -231,7 +321,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kocharian.ai;
 				PRODUCT_NAME = "Kocharian AI";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -239,25 +328,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C10000000000000000000001 /* Build configuration list for PBXProject "KocharianAI" */ = {
+		F81B57A71FEF468CE74BDB69 /* Build configuration list for PBXProject "KocharianAI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				X10000000000000000000001 /* Debug */,
-				X10000000000000000000002 /* Release */,
+				A2AAD67E976094D975345D5A /* Debug */,
+				17E972F4C7C9039CE66D612C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C10000000000000000000002 /* Build configuration list for PBXNativeTarget "KocharianAI" */ = {
+		AE93F00FED253E2B193381E5 /* Build configuration list for PBXNativeTarget "KocharianAI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				X10000000000000000000003 /* Debug */,
-				X10000000000000000000004 /* Release */,
+				5D35768437EC70D6C324A7F4 /* Debug */,
+				1C1953AF2A9BA8CA48F338D1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = R10000000000000000000000 /* Project object */;
+	rootObject = 95E889D2A0737C48E183C3D2 /* Project object */;
 }

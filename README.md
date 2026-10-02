@@ -110,8 +110,11 @@ Kocharian AI is a installable PWA **and** ships a native iOS wrapper.
    * **iPhone (Safari)** — Share ⬆ → *Add to Home Screen*
    * **Android (Chrome)** — ⋮ → *Install app*
 
-Prefer a real native build? Open `ios/KocharianAI.xcodeproj` in Xcode, set your
-signing team and press Run. Full walkthrough: [docs/XCODE.md](docs/XCODE.md).
+Prefer a real native app? `ios/KocharianAI.xcodeproj` is a **fully native SwiftUI**
+client (no web view): Apple's on-device model via FoundationModels, Vision OCR,
+Speech transcription, PDFKit — with this server as an optional Qwen backend.
+Open it in Xcode, set your signing team, press Run. Full walkthrough:
+[docs/XCODE.md](docs/XCODE.md).
 
 ## Keyboard shortcuts
 

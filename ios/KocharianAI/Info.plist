@@ -48,14 +48,14 @@
 	<string>Take a photo to attach it to a chat message for on-device text extraction.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Attach images from your library so Kocharian AI can read the text inside them.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Voice notes you record are transcribed so Kocharian AI can answer questions about them. Transcription runs on this device whenever the system supports it.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Kocharian AI connects to the server running on your own computer over your local Wi-Fi network.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<!-- The Kocharian AI server runs on your own LAN over plain HTTP. -->
 		<key>NSAllowsLocalNetworking</key>
-		<true/>
-		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
 </dict>

@@ -1,55 +1,23 @@
-# Put Kocharian AI on your iPhone with Xcode
+# Kocharian AI for iPhone — open in Xcode and install
 
-There are two ways to get the app onto your phone. Pick one:
+`ios/KocharianAI.xcodeproj` is a **100 % native Swift app**. No web view, no
+JavaScript, no embedded browser — SwiftUI screens, Swift concurrency, and
+Apple's own on-device frameworks:
 
-| | Needs a Mac? | Shows up as a real app icon? | Time |
-|---|---|---|---|
-| **A. Add to Home Screen (PWA)** | No | Yes | 1 minute |
-| **B. Build in Xcode** (this guide) | Yes (macOS + Xcode 15+) | Yes, a real `.app` | ~10 minutes |
+| Feature | Framework |
+|---|---|
+| Chat answers | **FoundationModels** — Apple's on-device LLM (iOS 26+) |
+| Chat answers (fallback / bigger model) | Your Kocharian server running Qwen 1.5B Q4_K_M, over SSE |
+| Reading text in photos | **Vision** (`VNRecognizeTextRequest`) |
+| Voice notes → text | **Speech** (`SFSpeechRecognizer`, on-device when supported) |
+| Documents | **PDFKit** |
+| Recording | **AVFoundation** |
+| Storage | `Codable` JSON in the app container |
 
-Either way the phone is just the *screen*: the model runs on the computer that
-runs `npm start`, so your chats, images and audio never leave your network.
+Everything stays on the phone (or on your own computer, if you choose the
+server engine).
 
----
-
-## 0. Start the server on your computer (both options need this)
-
-```bash
-git clone https://github.com/engineer2025-sudo/Kocharian-AI.git
-cd Kocharian-AI
-npm install
-npm start
-```
-
-The first launch downloads the Qwen 1.5B Q4_K_M model automatically (~1.1 GB,
-progress is shown in the UI). Then note the LAN address — open
-<http://localhost:3000>, click **Get it on your phone** in the sidebar, and the
-app shows the exact URL plus a QR code (e.g. `http://192.168.1.42:3000`).
-
-> Your iPhone and the computer must be on the **same Wi‑Fi network**, and the
-> computer's firewall must allow incoming connections on port 3000.
-
----
-
-## Option A — no Xcode, 1 minute
-
-1. On the iPhone open **Safari** (it must be Safari, not Chrome).
-2. Go to the LAN address, e.g. `http://192.168.1.42:3000` — or scan the QR code
-   in **Get it on your phone**.
-3. Tap the **Share** button ⬆ → scroll down → **Add to Home Screen** → **Add**.
-
-You now have a full‑screen Kocharian AI icon on your Home Screen, with the new
-app icon, no browser chrome, and dark‑mode status bar.
-
----
-
-## Option B — open in Xcode and install the native app
-
-The repo ships a ready‑made Xcode project at **`ios/KocharianAI.xcodeproj`**.
-It is a small SwiftUI + `WKWebView` shell (microphone, camera and photo
-permissions already declared, local HTTP allowed) that points at your server.
-
-### 1. Get the code onto the Mac
+## 1. Open it
 
 ```bash
 git clone https://github.com/engineer2025-sudo/Kocharian-AI.git
@@ -57,63 +25,86 @@ cd Kocharian-AI
 open ios/KocharianAI.xcodeproj
 ```
 
-(Or in Xcode: **File ▸ Open…** and choose `ios/KocharianAI.xcodeproj`.)
+Needs macOS with **Xcode 16 or later**. Deployment target is iOS 16; the
+on-device Apple Intelligence engine lights up on iOS 26+ devices.
 
-### 2. Set your signing team (free Apple ID is fine)
+## 2. Signing (free Apple ID works)
 
-1. Select the blue **KocharianAI** project in the left sidebar.
-2. Select the **KocharianAI** target → **Signing & Capabilities** tab.
-3. Tick **Automatically manage signing**.
-4. **Team** → add / pick your Apple ID (Xcode ▸ Settings ▸ Accounts ▸ **+**).
-5. If Xcode complains the bundle ID is taken, change
-   **Bundle Identifier** from `com.kocharian.ai` to something unique such as
+1. Select the blue **KocharianAI** project → target **KocharianAI** →
+   **Signing & Capabilities**.
+2. Tick *Automatically manage signing* and pick your **Team**
+   (add your Apple ID in Xcode ▸ Settings ▸ Accounts).
+3. If the bundle id is taken, change `com.kocharian.ai` →
    `com.yourname.kocharian`.
 
-### 3. Plug in the iPhone and run
+## 3. Run on the phone
 
-1. Connect the iPhone with a cable (or use Wi‑Fi: **Window ▸ Devices and
-   Simulators** → *Connect via network*).
-2. On the phone: **Settings ▸ Privacy & Security ▸ Developer Mode → On**
-   (iOS 16+), then restart the phone when asked.
-3. In Xcode's toolbar choose your iPhone from the device menu (next to the
-   scheme name), then press **⌘R** / the ▶︎ Run button.
-4. First install only: on the phone go to
-   **Settings ▸ General ▸ VPN & Device Management ▸ *your Apple ID* ▸ Trust**,
-   then tap the app icon again.
+1. iPhone: **Settings ▸ Privacy & Security ▸ Developer Mode → On**, reboot.
+2. Plug the phone in, select it in Xcode's device menu, press **⌘R**.
+3. First install only: **Settings ▸ General ▸ VPN & Device Management ▸
+   your Apple ID ▸ Trust**.
 
-### 4. Point the app at your computer
+Free-account provisioning expires after 7 days — press Run again to refresh.
 
-On first launch the app asks for the **server address**. Type the LAN URL the
-desktop app showed you, e.g.
+## 4. Pick the engine (Settings ▸ Model)
+
+* **On-device** — zero setup on an Apple Intelligence iPhone (15 Pro and newer,
+  iOS 26+, Apple Intelligence enabled). Fully offline, airplane-mode friendly.
+* **Server** — start the repo's Node server on your computer:
+
+  ```bash
+  npm install && npm start      # first run downloads Qwen 1.5B Q4_K_M (~1.1 GB)
+  ```
+
+  Enter the LAN address it prints (e.g. `192.168.1.42:3000`) and tap
+  **Test connection**. Phone and computer must share one Wi-Fi network;
+  `NSAllowsLocalNetworking` is already set, so plain HTTP on the LAN is allowed.
+
+## What's in the app
 
 ```
-http://192.168.1.42:3000
+ios/KocharianAI/
+├── KocharianAIApp.swift          @main, injects the stores
+├── Models/
+│   ├── ChatModels.swift          Conversation, ChatMessage, Attachment (Codable)
+│   ├── ChatStore.swift           persistence, search, pin, rename, truncate
+│   ├── ChatViewModel.swift       send / stop / regenerate / edit-and-resend
+│   └── AppSettings.swift         engine, server URL, temperature, system prompt
+├── Engines/
+│   ├── ChatEngine.swift          protocol + EngineRouter
+│   ├── AppleIntelligenceEngine.swift   FoundationModels streaming
+│   └── KocharianServerEngine.swift     SSE client for /api/chat
+├── Services/
+│   ├── AttachmentService.swift   Vision OCR · Speech · PDFKit
+│   └── AudioRecorder.swift       AVAudioRecorder + level meter
+└── Views/                        SwiftUI: chat, composer, sidebar, settings,
+                                  Markdown + code blocks, camera picker
 ```
 
-(you can type just `192.168.1.42` — `http://` and `:3000` are filled in for you).
+Features: streaming token-by-token answers, stop, regenerate, edit & resend,
+copy, swipe to pin/rename/delete, chat search, Markdown rendering with
+copyable code blocks, Share-sheet export to Markdown, photo/camera/file/voice
+attachments with on-device text extraction, light & dark mode, iPad split view.
 
-Tap **Connect**. That's it — full Kocharian AI with chat, image OCR, audio
-transcription and file uploads.
+### Adding a Swift file
 
-**Shake the phone** at any time to change the server address.
+The project file is generated, so after adding or deleting sources run:
 
-### Notes & gotchas
+```bash
+python3 scripts/gen-ios-project.py
+```
 
-* **Free Apple ID signing expires after 7 days** — just hit Run in Xcode again
-  to re‑install. A paid Apple Developer account ($99/yr) extends this to 1 year
-  and lets you distribute via TestFlight.
-* Deployment target is **iOS 15.0**, device family iPhone + iPad.
-* App icon lives in `ios/KocharianAI/Assets.xcassets/AppIcon.appiconset/`. It is
-  generated by `python3 scripts/make-icons.py` together with the web icons in
-  `public/icons/`, so changing the generator updates both.
-* No Mac? Use Option A, or build in the cloud with Xcode Cloud / a macOS CI
-  runner — the project builds headlessly with
-  `xcodebuild -project ios/KocharianAI.xcodeproj -scheme KocharianAI -sdk iphoneos build`.
+(It rebuilds `project.pbxproj` and the shared scheme from the folder tree.)
+
+### App icon
+
+`python3 scripts/make-icons.py` regenerates both the iOS asset-catalog icon and
+the web icons in `public/icons/`.
 
 ---
 
-## Android
+## Don't have a Mac?
 
-Android gets the same treatment with zero extra work: open the LAN URL in
-Chrome → **⋮ menu ▸ Install app / Add to Home screen**. The manifest marks the
-app as `standalone`, so it launches without browser UI.
+The web app is also an installable PWA: run `npm start`, open the LAN URL in
+Safari on the iPhone, then Share ⬆ → **Add to Home Screen**. Android Chrome:
+⋮ → **Install app**.
