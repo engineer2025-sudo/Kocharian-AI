@@ -16,3 +16,6 @@ xcuserdata/
 # Swift Package Manager
 .build/
 .swiftpm/
+
+# Locally built llama.cpp engine (optional — see docs/XCODE.md)
+*.xcframework/

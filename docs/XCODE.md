@@ -38,6 +38,27 @@ shows for the `llama-bXXXXX-xcframework.zip` asset).
 
 If package resolution ever gets stuck: **File ▸ Packages ▸ Reset Package Caches**.
 
+### Already built llama.cpp yourself?
+
+If you ran
+
+```bash
+git clone https://github.com/ggml-org/llama.cpp
+cd llama.cpp && ./build-xcframework.sh
+```
+
+you can use that build instead of the download — copy it into the package and
+the manifest picks it up automatically:
+
+```bash
+cp -R llama.cpp/build-apple/llama.xcframework \
+      Kocharian-AI/Packages/LlamaFramework/
+```
+
+Then in Xcode: **File ▸ Packages ▸ Reset Package Caches**, and build. (It is
+git-ignored, so it stays out of the repo.) Delete that folder to go back to the
+downloaded release.
+
 ## 3. Signing
 
 1. Blue **KocharianAI** project → target **KocharianAI** →
