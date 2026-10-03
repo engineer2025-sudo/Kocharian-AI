@@ -48,12 +48,10 @@ is downloading a model you choose, from the in-app **Models** screen:
 Downloads can be paused and resumed, you can import your own `.gguf` from the
 Files app, and deleting a model frees the space immediately.
 
-> **One-time setup for on-board models:** build Apple's llama.cpp XCFramework
-> and embed it in the target — `git clone https://github.com/ggml-org/llama.cpp
-> && cd llama.cpp && ./build-xcframework.sh`, then drag
-> `build-apple/llama.xcframework` into Xcode and set it to *Embed & Sign*.
-> Full instructions in [docs/XCODE.md](docs/XCODE.md). Without it the app still
-> builds and the Apple Intelligence engine works.
+> **No setup needed:** the on-board engine uses the official llama.cpp
+> XCFramework, wired in as the local Swift package `Packages/LlamaFramework`.
+> Xcode downloads and links it automatically the first time you build
+> (~61 MB). See [docs/XCODE.md](docs/XCODE.md).
 
 ## Project layout
 
@@ -71,6 +69,8 @@ KocharianAI/
 │                CameraPicker · Theme
 ├── Assets.xcassets
 └── Info.plist
+Packages/
+└── LlamaFramework/Package.swift   official llama.cpp XCFramework (auto-fetched)
 Tools/
 ├── GenerateProject.swift   regenerates the .xcodeproj from the folder tree
 └── GenerateIcons.swift     draws the app icon with Core Graphics

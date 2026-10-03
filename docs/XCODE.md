@@ -21,38 +21,22 @@ cd Kocharian-AI
 open KocharianAI.xcodeproj
 ```
 
-Requires macOS with **Xcode 16+**. Deployment target: iOS 16
+Requires macOS with **Xcode 16+**. Deployment target: iOS 17
 (Apple Intelligence engine lights up on iOS 26+).
 
-## 2. Add the llama.cpp engine (one-time, needed for on-board models)
+## 2. Let Xcode fetch the engine (automatic)
 
-The app builds and runs without it — the on-board engine simply reports that
-llama.cpp isn't linked. To enable local GGUF inference, build Apple's official
-XCFramework once and drop it in:
+Nothing to build by hand. The project references a local Swift package,
+`Packages/LlamaFramework`, which points at the **official llama.cpp XCFramework
+release** (`b11200`, ~61 MB). The first time you open or build the project,
+Xcode downloads and links it automatically — watch the status bar for
+*“Resolve Package Graph”*. You need internet for that one download only.
 
-```bash
-cd ..
-git clone https://github.com/ggml-org/llama.cpp
-cd llama.cpp
-./build-xcframework.sh          # ~10 min; produces build-apple/llama.xcframework
-```
+To move to a newer llama.cpp build, edit `Packages/LlamaFramework/Package.swift`
+and change `version` + `checksum` (the checksum is the `sha256` digest GitHub
+shows for the `llama-bXXXXX-xcframework.zip` asset).
 
-Then in Xcode:
-
-1. Drag `llama.cpp/build-apple/llama.xcframework` onto the **KocharianAI**
-   project in the navigator (tick *Copy items if needed*).
-2. Select the **KocharianAI** target → **General** →
-   **Frameworks, Libraries, and Embedded Content** → set `llama.xcframework`
-   to **Embed & Sign**.
-3. Build (**⌘B**). `#if canImport(llama)` in
-   `KocharianAI/Engines/LlamaRunner.swift` now compiles the real runner.
-
-`LlamaRunner.swift` uses the current llama.cpp C API
-(`llama_model_load_from_file`, `llama_init_from_model`, sampler chains). Use a
-2025-or-newer checkout; if you pin an older tag, adjust those symbol names.
-
-> Metal GPU offload is enabled on device (`n_gpu_layers = 999`) and disabled in
-> the simulator automatically.
+If package resolution ever gets stuck: **File ▸ Packages ▸ Reset Package Caches**.
 
 ## 3. Signing
 
@@ -112,7 +96,7 @@ ready yet.
 
 ## Troubleshooting
 
-* **“The llama.cpp framework isn’t linked yet.”** — do step 2.
+* **“The llama.cpp framework isn’t linked yet.”** — package resolution failed; File ▸ Packages ▸ Reset Package Caches, then build again.
 * **Download stops at a few KB** — the Hugging Face URL redirected to an error
   page; check Wi-Fi, then retry. Any direct `.gguf` link works via *Import*.
 * **App is killed while answering** — the model is too large for the device:

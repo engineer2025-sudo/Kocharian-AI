@@ -17,7 +17,7 @@ import Foundation
 let app = "KocharianAI"
 let productName = "Kocharian AI"
 let bundleID = "com.kocharian.ai"
-let deploymentTarget = "16.0"
+let deploymentTarget = "17.0"
 
 let root = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
 let sourceRoot = root.appendingPathComponent(app)
@@ -171,6 +171,7 @@ let pbx = """
 \tobjects = {
 
 /* Begin PBXBuildFile section */
+\t\t\(id("llama_build")) /* llama in Frameworks */ = {isa = PBXBuildFile; productRef = \(id("llama_product")) /* llama */; };
 \(buildFiles.sorted().joined(separator: "\n"))
 /* End PBXBuildFile section */
 
@@ -184,6 +185,7 @@ let pbx = """
 \t\t\tisa = PBXFrameworksBuildPhase;
 \t\t\tbuildActionMask = 2147483647;
 \t\t\tfiles = (
+\t\t\t\t\(id("llama_build")) /* llama in Frameworks */,
 \t\t\t);
 \t\t\trunOnlyForDeploymentPostprocessing = 0;
 \t\t};
@@ -223,6 +225,9 @@ let pbx = """
 \t\t\tdependencies = (
 \t\t\t);
 \t\t\tname = \(app);
+\t\t\tpackageProductDependencies = (
+\t\t\t\t\(id("llama_product")) /* llama */,
+\t\t\t);
 \t\t\tproductName = \(app);
 \t\t\tproductReference = \(id("product")) /* \(productName).app */;
 \t\t\tproductType = "com.apple.product-type.application";
@@ -251,6 +256,9 @@ let pbx = """
 \t\t\t\tBase,
 \t\t\t);
 \t\t\tmainGroup = \(id("main"));
+\t\t\tpackageReferences = (
+\t\t\t\t\(id("llama_package")) /* XCLocalSwiftPackageReference "Packages/LlamaFramework" */,
+\t\t\t);
 \t\t\tproductRefGroup = \(id("products")) /* Products */;
 \t\t\tprojectDirPath = "";
 \t\t\tprojectRoot = "";
@@ -349,6 +357,20 @@ let pbx = """
 \t\t\tdefaultConfigurationName = Release;
 \t\t};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+\t\t\(id("llama_package")) /* XCLocalSwiftPackageReference "Packages/LlamaFramework" */ = {
+\t\t\tisa = XCLocalSwiftPackageReference;
+\t\t\trelativePath = Packages/LlamaFramework;
+\t\t};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+\t\t\(id("llama_product")) /* llama */ = {
+\t\t\tisa = XCSwiftPackageProductDependency;
+\t\t\tproductName = llama;
+\t\t};
+/* End XCSwiftPackageProductDependency section */
 \t};
 \trootObject = \(id("root")) /* Project object */;
 }
