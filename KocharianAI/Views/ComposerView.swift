@@ -66,7 +66,7 @@ struct ComposerView: View {
         .padding(.vertical, 10)
         .background(.bar)
         .photosPicker(isPresented: $showPhotoPicker, selection: $photoItem, matching: .images)
-        .onChange(of: photoItem) { _ in Task { await importPhoto() } }
+        .onChange(of: photoItem) { _, _ in Task { await importPhoto() } }
         .fileImporter(isPresented: $showFileImporter,
                       allowedContentTypes: [.image, .audio, .pdf, .plainText, .json, .sourceCode, .data],
                       allowsMultipleSelection: true) { result in
@@ -210,7 +210,7 @@ struct WaveformView: View {
             }
             .frame(maxHeight: .infinity, alignment: .center)
         }
-        .onChange(of: level) { newValue in
+        .onChange(of: level) { _, newValue in
             history.removeFirst()
             history.append(max(0.05, newValue))
         }

@@ -30,7 +30,7 @@ struct SettingsView: View {
                     .environmentObject(settings)
             }
             .task { refreshAppleStatus() }
-            .onChange(of: settings.engineRaw) { _ in refreshAppleStatus() }
+            .onChange(of: settings.engineRaw) { _, _ in refreshAppleStatus() }
         }
     }
 

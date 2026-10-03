@@ -62,9 +62,10 @@ actor LlamaRunner {
         self.contextSize = Int32(max(512, contextSize))
         self.threadCount = Int32(max(1, min(threads, ProcessInfo.processInfo.processorCount)))
 
+        // Defaults already use mmap (weights page in, RSS stays low) and no
+        // mlock. Field names for those two moved around between llama.cpp
+        // releases, so don't touch them — only the GPU layer count matters.
         var modelParams = llama_model_default_params()
-        modelParams.use_mmap = true          // page the weights in, keeps RSS low
-        modelParams.use_mlock = false
         #if targetEnvironment(simulator)
         modelParams.n_gpu_layers = 0         // no Metal in the simulator
         #else

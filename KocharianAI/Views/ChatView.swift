@@ -56,10 +56,10 @@ struct ChatView: View {
                     .padding(.top, 14)
                 }
                 .scrollDismissesKeyboard(.interactively)
-                .onChange(of: conversation?.messages.last?.content) { _ in
+                .onChange(of: conversation?.messages.last?.content) { _, _ in
                     withAnimation(.easeOut(duration: 0.18)) { proxy.scrollTo("bottom", anchor: .bottom) }
                 }
-                .onChange(of: conversation?.messages.count) { _ in
+                .onChange(of: conversation?.messages.count) { _, _ in
                     withAnimation(.easeOut(duration: 0.18)) { proxy.scrollTo("bottom", anchor: .bottom) }
                 }
             }
@@ -105,7 +105,7 @@ struct ChatView: View {
         .sheet(isPresented: $showModels) {
             ModelsView().environmentObject(models).environmentObject(settings)
         }
-        .onChange(of: recorder.errorMessage) { value in
+        .onChange(of: recorder.errorMessage) { _, value in
             if let value { model.errorBanner = value }
         }
     }
