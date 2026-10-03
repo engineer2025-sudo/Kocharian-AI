@@ -3,6 +3,7 @@ import SwiftUI
 struct ConversationListView: View {
     @EnvironmentObject private var store: ChatStore
     @EnvironmentObject private var settings: AppSettings
+    @EnvironmentObject private var models: ModelManager
     @State private var renaming: Conversation?
     @State private var renameText = ""
     @State private var showSettings = false
@@ -65,7 +66,9 @@ struct ConversationListView: View {
                 Button { showSettings = true } label: { Image(systemName: "gearshape") }
             }
         }
-        .sheet(isPresented: $showSettings) { SettingsView().environmentObject(settings) }
+        .sheet(isPresented: $showSettings) {
+            SettingsView().environmentObject(settings).environmentObject(models)
+        }
         .alert("Rename chat", isPresented: Binding(get: { renaming != nil },
                                                    set: { if !$0 { renaming = nil } })) {
             TextField("Title", text: $renameText)

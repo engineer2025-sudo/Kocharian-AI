@@ -2,120 +2,20 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var settings: AppSettings
+    @EnvironmentObject private var models: ModelManager
     @Environment(\.dismiss) private var dismiss
 
-    @State private var probeState: ProbeState = .idle
-    @State private var onDeviceStatus: String?
-
-    private enum ProbeState: Equatable {
-        case idle, testing, ok(String), failed(String)
-    }
+    @State private var appleStatus: String?
+    @State private var showModels = false
 
     var body: some View {
         NavigationStack {
             Form {
-                Section {
-                    Picker("Engine", selection: Binding(get: { settings.engine },
-                                                        set: { settings.engine = $0 })) {
-                        ForEach(EngineKind.allCases) { kind in
-                            Text(kind.shortTitle).tag(kind)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-
-                    Text(settings.engine.footnote)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
-                    if settings.engine == .onDevice, let onDeviceStatus {
-                        Label(onDeviceStatus, systemImage: "exclamationmark.triangle")
-                            .font(.caption)
-                            .foregroundStyle(.orange)
-                    } else if settings.engine == .onDevice {
-                        Label("Apple Intelligence model ready", systemImage: "checkmark.seal")
-                            .font(.caption)
-                            .foregroundStyle(Theme.accent)
-                    }
-                } header: {
-                    Text("Model")
-                }
-
-                if settings.engine == .localServer {
-                    Section {
-                        TextField("http://192.168.1.42:8080", text: $settings.serverURL)
-                            .keyboardType(.URL)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                        TextField("Model name (optional)", text: $settings.modelName)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                        SecureField("API key (optional)", text: $settings.apiKey)
-                        Button {
-                            Task { await testConnection() }
-                        } label: {
-                            HStack {
-                                Text("Test connection")
-                                Spacer()
-                                switch probeState {
-                                case .idle: EmptyView()
-                                case .testing: ProgressView().controlSize(.small)
-                                case .ok(let model):
-                                    Label(model, systemImage: "checkmark.circle.fill")
-                                        .font(.caption)
-                                        .foregroundStyle(Theme.accent)
-                                case .failed(let message):
-                                    Label(message, systemImage: "xmark.circle.fill")
-                                        .font(.caption)
-                                        .foregroundStyle(.red)
-                                        .lineLimit(2)
-                                }
-                            }
-                        }
-                    } header: {
-                        Text("Server")
-                    } footer: {
-                        Text("Any OpenAI-compatible server works: llama.cpp (`llama-server -m qwen2.5-1.5b-instruct-q4_k_m.gguf --port 8080`), LM Studio, Ollama (`http://mac.local:11434/v1`) or vLLM. Phone and computer must share a Wi-Fi network.")
-                    }
-                }
-
-                Section {
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text("Temperature")
-                            Spacer()
-                            Text(String(format: "%.2f", settings.temperature))
-                                .foregroundStyle(.secondary)
-                                .monospacedDigit()
-                        }
-                        Slider(value: $settings.temperature, in: 0...1.5, step: 0.05)
-                    }
-                    Stepper("Max new tokens: \(settings.maxTokens)",
-                            value: $settings.maxTokens, in: 128...4096, step: 128)
-                    Toggle("Prefer on-device speech recognition", isOn: $settings.preferOnDeviceSpeech)
-                } header: {
-                    Text("Generation")
-                }
-
-                Section {
-                    TextEditor(text: $settings.systemPrompt)
-                        .frame(minHeight: 110)
-                        .font(.footnote)
-                    Button("Reset to default") {
-                        settings.systemPrompt = AppSettings.defaultSystemPrompt
-                    }
-                } header: {
-                    Text("System prompt")
-                }
-
-                Section {
-                    LabeledContent("Version", value: "1.0")
-                    Label("Chats, photos, voice notes and documents are processed on this device (or on your own computer). Nothing is sent to a third-party cloud.",
-                          systemImage: "lock.shield")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } header: {
-                    Text("About")
-                }
+                engineSection
+                if settings.engine == .onboard { onboardSection }
+                generationSection
+                promptSection
+                aboutSection
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -124,30 +24,146 @@ struct SettingsView: View {
                     Button("Done") { dismiss() }
                 }
             }
-            .task { refreshOnDeviceStatus() }
-            .onChange(of: settings.engineRaw) { _ in refreshOnDeviceStatus() }
+            .sheet(isPresented: $showModels) {
+                ModelsView()
+                    .environmentObject(models)
+                    .environmentObject(settings)
+            }
+            .task { refreshAppleStatus() }
+            .onChange(of: settings.engineRaw) { _ in refreshAppleStatus() }
         }
     }
 
-    private func refreshOnDeviceStatus() {
-        onDeviceStatus = EngineRouter.shared
-            .engine(for: .onDevice)
+    // MARK: - Sections
+
+    private var engineSection: some View {
+        Section {
+            Picker("Engine", selection: Binding(get: { settings.engine },
+                                                set: { settings.engine = $0 })) {
+                ForEach(EngineKind.allCases) { kind in
+                    Text(kind.shortTitle).tag(kind)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Text(settings.engine.footnote)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            if settings.engine == .appleIntelligence {
+                if let appleStatus {
+                    Label(appleStatus, systemImage: "exclamationmark.triangle")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                } else {
+                    Label("Apple Intelligence is ready", systemImage: "checkmark.seal")
+                        .font(.caption)
+                        .foregroundStyle(Theme.accent)
+                }
+            }
+        } header: {
+            Text("Answers come from")
+        }
+    }
+
+    private var onboardSection: some View {
+        Section {
+            Button {
+                showModels = true
+            } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Model")
+                            .foregroundStyle(.primary)
+                        Text(models.selectedModel?.displayName ?? "None downloaded yet")
+                            .font(.caption)
+                            .foregroundStyle(models.selectedModel == nil ? .orange : .secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
+            }
+
+            if let model = models.selectedModel {
+                LabeledContent("Size",
+                               value: ByteCountFormatter.string(fromByteCount: model.byteSize,
+                                                                countStyle: .file))
+                LabeledContent("Context", value: "\(model.contextSize) tokens")
+            }
+
+            Picker("CPU threads", selection: $settings.threadCount) {
+                Text("Automatic").tag(0)
+                ForEach([2, 4, 6, 8], id: \.self) { count in
+                    Text("\(count)").tag(count)
+                }
+            }
+        } header: {
+            Text("On-board model")
+        } footer: {
+            Text("Qwen 2.5 1.5B Instruct (Q4_K_M) is the recommended download; 0.5B and SmolLM2 are lighter options for older devices. You can also import your own .gguf file.")
+        }
+    }
+
+    private var generationSection: some View {
+        Section {
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Temperature")
+                    Spacer()
+                    Text(String(format: "%.2f", settings.temperature))
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                }
+                Slider(value: $settings.temperature, in: 0...1.5, step: 0.05)
+            }
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Top-p")
+                    Spacer()
+                    Text(String(format: "%.2f", settings.topP))
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                }
+                Slider(value: $settings.topP, in: 0.1...1.0, step: 0.05)
+            }
+            Stepper("Max new tokens: \(settings.maxTokens)",
+                    value: $settings.maxTokens, in: 128...4096, step: 128)
+            Toggle("Prefer on-device speech recognition", isOn: $settings.preferOnDeviceSpeech)
+        } header: {
+            Text("Generation")
+        }
+    }
+
+    private var promptSection: some View {
+        Section {
+            TextEditor(text: $settings.systemPrompt)
+                .frame(minHeight: 110)
+                .font(.footnote)
+            Button("Reset to default") {
+                settings.systemPrompt = AppSettings.defaultSystemPrompt
+            }
+        } header: {
+            Text("System prompt")
+        }
+    }
+
+    private var aboutSection: some View {
+        Section {
+            LabeledContent("Version", value: "1.0")
+            Label("Chats, photos, voice notes and documents never leave this iPhone. Both engines run locally; the only network use is downloading a model you choose.",
+                  systemImage: "lock.shield")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        } header: {
+            Text("About")
+        }
+    }
+
+    private func refreshAppleStatus() {
+        appleStatus = EngineRouter.shared
+            .engine(for: .appleIntelligence)
             .unavailableReason(for: settings.snapshot)
-    }
-
-    private func testConnection() async {
-        probeState = .testing
-        let engine = EngineRouter.shared.engine(for: .localServer) as? LocalLLMEngine
-        let url = settings.normalizedServerURL
-        guard let engine, !url.isEmpty else {
-            probeState = .failed("Enter an address first")
-            return
-        }
-        switch await engine.probe(url) {
-        case .success(let model):
-            probeState = .ok(model)
-        case .failure(let error):
-            probeState = .failed((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
-        }
     }
 }

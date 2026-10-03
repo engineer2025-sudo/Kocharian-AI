@@ -1,36 +1,43 @@
 import Foundation
 import SwiftUI
 
-/// Which brain answers the user.
+/// Which brain answers the user. Both run on this device — there is no server
+/// mode and no cloud call anywhere in the app.
 enum EngineKind: String, CaseIterable, Identifiable, Codable {
-    /// Apple's on-device foundation model (iOS 26+, Apple Intelligence devices).
-    case onDevice
-    /// Any OpenAI-compatible server you run yourself (llama.cpp, LM Studio,
-    /// Ollama…) hosting a model such as Qwen 1.5B Instruct Q4_K_M.
-    case localServer
+    /// Apple's built-in foundation model (iOS 26+, Apple Intelligence devices).
+    case appleIntelligence
+    /// A GGUF model you downloaded inside the app, run with llama.cpp.
+    case onboard
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .onDevice: return "On-device (Apple Intelligence)"
-        case .localServer: return "Local LLM server (Qwen GGUF)"
+        case .appleIntelligence: return "Apple Intelligence"
+        case .onboard: return "On-board model"
         }
     }
 
     var shortTitle: String {
         switch self {
-        case .onDevice: return "On-device"
-        case .localServer: return "Server"
+        case .appleIntelligence: return "Apple"
+        case .onboard: return "On-board"
         }
     }
 
     var footnote: String {
         switch self {
-        case .onDevice:
-            return "Runs entirely on this iPhone. Needs iOS 26 or later on an Apple Intelligence capable device. Nothing leaves the phone."
-        case .localServer:
-            return "Streams from a model you host yourself — llama.cpp, LM Studio or Ollama serving Qwen 1.5B — over your own Wi-Fi."
+        case .appleIntelligence:
+            return "Apple's own model, built into iOS. Nothing to download, but it needs iOS 26 or later on an Apple Intelligence capable device."
+        case .onboard:
+            return "Runs a model you download inside the app — Qwen 2.5 1.5B Instruct (Q4_K_M) or a smaller one. Works completely offline once downloaded."
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .appleIntelligence: return "apple.logo"
+        case .onboard: return "cpu"
         }
     }
 }
@@ -41,35 +48,32 @@ final class AppSettings: ObservableObject {
     private let defaults: UserDefaults
 
     @Published var engineRaw: String { didSet { defaults.set(engineRaw, forKey: Key.engine) } }
-    @Published var serverURL: String { didSet { defaults.set(serverURL, forKey: Key.serverURL) } }
-    @Published var modelName: String { didSet { defaults.set(modelName, forKey: Key.modelName) } }
-    @Published var apiKey: String { didSet { defaults.set(apiKey, forKey: Key.apiKey) } }
     @Published var systemPrompt: String { didSet { defaults.set(systemPrompt, forKey: Key.systemPrompt) } }
     @Published var temperature: Double { didSet { defaults.set(temperature, forKey: Key.temperature) } }
+    @Published var topP: Double { didSet { defaults.set(topP, forKey: Key.topP) } }
     @Published var maxTokens: Int { didSet { defaults.set(maxTokens, forKey: Key.maxTokens) } }
-    @Published var preferOnDeviceSpeech: Bool { didSet { defaults.set(preferOnDeviceSpeech, forKey: Key.onDeviceSpeech) } }
+    @Published var threadCount: Int { didSet { defaults.set(threadCount, forKey: Key.threads) } }
+    @Published var preferOnDeviceSpeech: Bool { didSet { defaults.set(preferOnDeviceSpeech, forKey: Key.speech) } }
 
     private enum Key {
         static let engine = "engineKind"
-        static let serverURL = "serverURL"
-        static let modelName = "modelName"
-        static let apiKey = "apiKey"
         static let systemPrompt = "systemPrompt"
         static let temperature = "temperature"
+        static let topP = "topP"
         static let maxTokens = "maxTokens"
-        static let onDeviceSpeech = "preferOnDeviceSpeech"
+        static let threads = "threadCount"
+        static let speech = "preferOnDeviceSpeech"
     }
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        engineRaw = defaults.string(forKey: Key.engine) ?? EngineKind.onDevice.rawValue
-        serverURL = defaults.string(forKey: Key.serverURL) ?? ""
-        modelName = defaults.string(forKey: Key.modelName) ?? "qwen2.5-1.5b-instruct"
-        apiKey = defaults.string(forKey: Key.apiKey) ?? ""
+        engineRaw = defaults.string(forKey: Key.engine) ?? EngineKind.appleIntelligence.rawValue
         systemPrompt = defaults.string(forKey: Key.systemPrompt) ?? AppSettings.defaultSystemPrompt
         temperature = defaults.object(forKey: Key.temperature) as? Double ?? 0.7
+        topP = defaults.object(forKey: Key.topP) as? Double ?? 0.95
         maxTokens = defaults.object(forKey: Key.maxTokens) as? Int ?? 768
-        preferOnDeviceSpeech = defaults.object(forKey: Key.onDeviceSpeech) as? Bool ?? true
+        threadCount = defaults.object(forKey: Key.threads) as? Int ?? 0      // 0 = automatic
+        preferOnDeviceSpeech = defaults.object(forKey: Key.speech) as? Bool ?? true
     }
 
     static let defaultSystemPrompt = """
@@ -79,42 +83,31 @@ final class AppSettings: ObservableObject {
     """
 
     var engine: EngineKind {
-        get { EngineKind(rawValue: engineRaw) ?? .onDevice }
+        get { EngineKind(rawValue: engineRaw) ?? .appleIntelligence }
         set { engineRaw = newValue.rawValue }
     }
 
-    /// Normalised server address, e.g. `http://192.168.1.42:3000`.
-    var normalizedServerURL: String {
-        var value = serverURL.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !value.isEmpty else { return "" }
-        let lower = value.lowercased()
-        if !lower.hasPrefix("http://") && !lower.hasPrefix("https://") {
-            value = "http://" + value
-        }
-        while value.hasSuffix("/") { value.removeLast() }
-        if let url = URL(string: value), url.port == nil, !value.lowercased().hasPrefix("https://") {
-            value += ":8080"
-        }
-        return value
+    /// Threads llama.cpp should use: the performance cores, never more.
+    var resolvedThreadCount: Int {
+        if threadCount > 0 { return threadCount }
+        return max(2, ProcessInfo.processInfo.activeProcessorCount / 2)
     }
 
     struct Snapshot {
         var engine: EngineKind
-        var serverURL: String
-        var modelName: String
-        var apiKey: String
         var systemPrompt: String
         var temperature: Double
+        var topP: Double
         var maxTokens: Int
+        var threads: Int
     }
 
     var snapshot: Snapshot {
         Snapshot(engine: engine,
-                 serverURL: normalizedServerURL,
-                 modelName: modelName,
-                 apiKey: apiKey,
                  systemPrompt: systemPrompt,
                  temperature: temperature,
-                 maxTokens: maxTokens)
+                 topP: topP,
+                 maxTokens: maxTokens,
+                 threads: resolvedThreadCount)
     }
 }

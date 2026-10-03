@@ -3,15 +3,18 @@ import SwiftUI
 struct ChatView: View {
     @EnvironmentObject private var store: ChatStore
     @EnvironmentObject private var settings: AppSettings
+    @EnvironmentObject private var models: ModelManager
     @StateObject private var model = ChatViewModel()
     @StateObject private var recorder = AudioRecorder()
     @State private var showSettings = false
+    @State private var showModels = false
 
     private var conversation: Conversation? { store.selected }
 
     var body: some View {
         VStack(spacing: 0) {
             if let banner = model.errorBanner { errorBanner(banner) }
+            if let setup = setupHint { setupBanner(setup) }
 
             ScrollViewReader { proxy in
                 ScrollView {
@@ -84,6 +87,7 @@ struct ChatView: View {
                         }
                     }
                     Divider()
+                    Button { showModels = true } label: { Label("Models", systemImage: "cpu") }
                     Button { showSettings = true } label: { Label("Settings", systemImage: "gearshape") }
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -96,11 +100,39 @@ struct ChatView: View {
             }
         }
         .sheet(isPresented: $showSettings) {
-            SettingsView().environmentObject(settings)
+            SettingsView().environmentObject(settings).environmentObject(models)
+        }
+        .sheet(isPresented: $showModels) {
+            ModelsView().environmentObject(models).environmentObject(settings)
         }
         .onChange(of: recorder.errorMessage) { value in
             if let value { model.errorBanner = value }
         }
+    }
+
+    /// Nudges the user to finish setup (pick an engine that can actually answer).
+    private var setupHint: String? {
+        guard model.errorBanner == nil else { return nil }
+        return EngineRouter.shared.unavailableReason(for: settings.snapshot)
+    }
+
+    private func setupBanner(_ text: String) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "cpu")
+            VStack(alignment: .leading, spacing: 6) {
+                Text(text).font(.footnote)
+                HStack(spacing: 12) {
+                    Button("Get a model") { showModels = true }
+                        .font(.footnote.weight(.semibold))
+                    Button("Settings") { showSettings = true }
+                        .font(.footnote)
+                }
+            }
+            Spacer()
+        }
+        .padding(10)
+        .foregroundStyle(Theme.accent)
+        .background(Theme.accent.opacity(0.10))
     }
 
     private func errorBanner(_ text: String) -> some View {

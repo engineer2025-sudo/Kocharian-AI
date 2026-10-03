@@ -28,23 +28,32 @@ Step-by-step install guide (signing, Developer Mode, trusting the app):
 * **Export** a chat to Markdown through the share sheet.
 * iPhone + iPad (split view), light & dark mode, Dynamic Type.
 
-## Two engines (Settings ▸ Model)
+## Two engines (Settings ▸ Answers come from)
 
 | Engine | What it is | Requirements |
 |---|---|---|
-| **On-device** | Apple's foundation model through **FoundationModels** | iOS 26+, Apple Intelligence capable device. Fully offline. |
-| **Local LLM server** | Any OpenAI-compatible endpoint you host, e.g. Qwen 1.5B Instruct Q4_K_M | A computer on the same Wi-Fi |
+| **Apple Intelligence** | Apple's built-in model via `FoundationModels` | iOS 26+, Apple Intelligence capable device. Nothing to download. |
+| **On-board model** | A GGUF you download in the app, run with llama.cpp | ~1.1 GB free space for Qwen 2.5 1.5B (smaller models available) |
 
-Example for the second one — llama.cpp on your Mac/PC:
+The app has **no server mode** and makes no cloud calls. The only network use
+is downloading a model you choose, from the in-app **Models** screen:
 
-```bash
-llama-server -m qwen2.5-1.5b-instruct-q4_k_m.gguf --host 0.0.0.0 --port 8080
-```
+| Model | Size | Notes |
+|---|---|---|
+| Qwen 2.5 1.5B Instruct Q4_K_M | ~1.1 GB | recommended |
+| Qwen 2.5 Coder 1.5B Q4_K_M | ~1.1 GB | code |
+| Qwen 2.5 0.5B Instruct Q4_K_M | ~400 MB | older devices |
+| SmolLM2 360M / 135M Q8_0 | ~390 / 145 MB | tiny and fast |
 
-then enter `http://192.168.1.42:8080` in Settings ▸ Server and tap
-**Test connection**. LM Studio, Ollama (`http://mac.local:11434/v1`) and vLLM
-work the same way. `NSAllowsLocalNetworking` is set, so plain HTTP on your LAN
-is allowed; nothing is ever sent to a third-party cloud.
+Downloads can be paused and resumed, you can import your own `.gguf` from the
+Files app, and deleting a model frees the space immediately.
+
+> **One-time setup for on-board models:** build Apple's llama.cpp XCFramework
+> and embed it in the target — `git clone https://github.com/ggml-org/llama.cpp
+> && cd llama.cpp && ./build-xcframework.sh`, then drag
+> `build-apple/llama.xcframework` into Xcode and set it to *Embed & Sign*.
+> Full instructions in [docs/XCODE.md](docs/XCODE.md). Without it the app still
+> builds and the Apple Intelligence engine works.
 
 ## Project layout
 
@@ -53,11 +62,13 @@ KocharianAI.xcodeproj
 KocharianAI/
 ├── KocharianAIApp.swift              @main
 ├── Models/      ChatModels · ChatStore · ChatViewModel · AppSettings
+├── Models/      … ModelCatalog · ModelManager (downloads)
 ├── Engines/     ChatEngine (protocol + router)
-│                AppleIntelligenceEngine · LocalLLMEngine
+│                AppleIntelligenceEngine · OnboardModelEngine · LlamaRunner
 ├── Services/    AttachmentService (Vision · Speech · PDFKit) · AudioRecorder
 ├── Views/       RootView · ConversationListView · ChatView · ComposerView
-│                MessageRow · MarkdownText · SettingsView · CameraPicker · Theme
+│                MessageRow · MarkdownText · ModelsView · SettingsView
+│                CameraPicker · Theme
 ├── Assets.xcassets
 └── Info.plist
 Tools/
@@ -74,9 +85,9 @@ swift Tools/GenerateIcons.swift      # after changing the icon artwork
 
 ## Privacy
 
-Chats, photos, recordings and documents are processed on the device, or on a
-machine you own and point the app at. There is no analytics, no account and no
-third-party network call.
+Chats, photos, recordings and documents are processed entirely on the device.
+No analytics, no account, no server. Once a model is downloaded the app works
+in airplane mode.
 
 > The earlier Node/web prototype of Kocharian AI lives in this repository's git
 > history (before the “all-Swift iOS app” commit) if you ever need it.

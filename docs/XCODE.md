@@ -1,95 +1,122 @@
-# Open in Xcode and install on your iPhone
+# Open in Xcode, add the engine, install on your iPhone
 
-Kocharian AI is a pure Swift iOS app — the repository contains nothing but
-Swift sources, the asset catalog, `Info.plist` and the Xcode project.
+Kocharian AI is a pure Swift iOS app with **two ways to answer**:
 
-## 1. Requirements
+1. **Apple Intelligence** — Apple's built-in model via `FoundationModels`.
+   Nothing to download. Needs iOS 26+ on an Apple Intelligence device.
+2. **On-board model** — a GGUF you download inside the app
+   (**Qwen 2.5 1.5B Instruct Q4_K_M**, Qwen 2.5 Coder 1.5B, Qwen 2.5 0.5B,
+   SmolLM2 360M/135M, or your own `.gguf`), run locally with llama.cpp.
 
-* A Mac with **Xcode 16 or later**
-* An iPhone or iPad on **iOS 16+** (the on-device Apple Intelligence engine
-  needs iOS 26+ on a supported device)
-* An Apple ID — the **free** one works
+There is **no server mode** — the app never talks to a backend. The only
+network use is downloading a model you pick.
 
-## 2. Open the project
+---
+
+## 1. Open the project
 
 ```bash
-git clone https://github.com/engineer2025-sudo/Kocharian-AI.git
+git clone -b arena/01a0fec4-kocharian-ai https://github.com/engineer2025-sudo/Kocharian-AI.git
 cd Kocharian-AI
 open KocharianAI.xcodeproj
 ```
 
-(Or Xcode ▸ File ▸ Open… and select `KocharianAI.xcodeproj` in the repo root.)
+Requires macOS with **Xcode 16+**. Deployment target: iOS 16
+(Apple Intelligence engine lights up on iOS 26+).
 
-## 3. Set signing
+## 2. Add the llama.cpp engine (one-time, needed for on-board models)
 
-1. Click the blue **KocharianAI** project in the navigator.
-2. Select the **KocharianAI** target → **Signing & Capabilities**.
-3. Tick **Automatically manage signing**.
-4. **Team** → choose your Apple ID (add it under Xcode ▸ Settings ▸ Accounts ▸ +).
-5. If Xcode says the bundle identifier is unavailable, change
-   `com.kocharian.ai` to something unique such as `com.yourname.kocharian`.
-
-## 4. Run on the device
-
-1. iPhone: **Settings ▸ Privacy & Security ▸ Developer Mode → On** (iOS 16+),
-   then restart the phone.
-2. Connect the iPhone by cable (or Window ▸ Devices and Simulators ▸
-   *Connect via network*).
-3. Pick the device in the toolbar's run destination menu and press **⌘R**.
-4. First install only: on the phone open
-   **Settings ▸ General ▸ VPN & Device Management ▸ your Apple ID ▸ Trust**,
-   then launch the app again.
-
-Free provisioning profiles expire after **7 days** — press Run again to renew.
-A paid Apple Developer account extends this to a year and unlocks TestFlight.
-
-## 5. Choose how it answers — Settings ▸ Model
-
-### On-device (recommended, zero setup)
-
-Uses Apple's **FoundationModels** framework. Requires iOS 26 or later on an
-Apple Intelligence capable device with Apple Intelligence enabled. Works in
-airplane mode. If the device isn't eligible, the Settings screen tells you why.
-
-### Local LLM server (any model you like, e.g. Qwen 1.5B Q4_K_M)
-
-Run an OpenAI-compatible server on a computer on the same Wi-Fi:
+The app builds and runs without it — the on-board engine simply reports that
+llama.cpp isn't linked. To enable local GGUF inference, build Apple's official
+XCFramework once and drop it in:
 
 ```bash
-# llama.cpp
-llama-server -m qwen2.5-1.5b-instruct-q4_k_m.gguf --host 0.0.0.0 --port 8080
-
-# or LM Studio  → enable the local server
-# or Ollama     → http://<mac>.local:11434/v1
+cd ..
+git clone https://github.com/ggml-org/llama.cpp
+cd llama.cpp
+./build-xcframework.sh          # ~10 min; produces build-apple/llama.xcframework
 ```
 
-In the app: **Settings ▸ Server**, enter `http://192.168.1.42:8080`
-(the model name and API key fields are optional), then **Test connection**.
+Then in Xcode:
 
-Permissions the app may ask for: microphone (voice notes), speech recognition
-(transcripts), camera / photo library (image attachments), local network
-(server engine). All are declared in `KocharianAI/Info.plist`.
+1. Drag `llama.cpp/build-apple/llama.xcframework` onto the **KocharianAI**
+   project in the navigator (tick *Copy items if needed*).
+2. Select the **KocharianAI** target → **General** →
+   **Frameworks, Libraries, and Embedded Content** → set `llama.xcframework`
+   to **Embed & Sign**.
+3. Build (**⌘B**). `#if canImport(llama)` in
+   `KocharianAI/Engines/LlamaRunner.swift` now compiles the real runner.
 
-## 6. Developing
+`LlamaRunner.swift` uses the current llama.cpp C API
+(`llama_model_load_from_file`, `llama_init_from_model`, sampler chains). Use a
+2025-or-newer checkout; if you pin an older tag, adjust those symbol names.
+
+> Metal GPU offload is enabled on device (`n_gpu_layers = 999`) and disabled in
+> the simulator automatically.
+
+## 3. Signing
+
+1. Blue **KocharianAI** project → target **KocharianAI** →
+   **Signing & Capabilities**.
+2. Tick *Automatically manage signing*, pick your **Team** (free Apple ID is
+   fine; add it in Xcode ▸ Settings ▸ Accounts).
+3. Change the bundle id `com.kocharian.ai` if Xcode says it's taken.
+4. The target ships `KocharianAI.entitlements` with
+   `com.apple.developer.kernel.increased-memory-limit` so a 1.5B model has room
+   to run. With a **free** account that entitlement isn't allowed — if signing
+   fails, clear **Build Settings ▸ Code Signing Entitlements** (the app still
+   runs; just prefer the 0.5B model on smaller devices).
+
+## 4. Run
+
+1. iPhone: **Settings ▸ Privacy & Security ▸ Developer Mode → On**, reboot.
+2. Plug in, pick the device in Xcode's toolbar, press **⌘R**.
+3. First install: iPhone **Settings ▸ General ▸ VPN & Device Management ▸ your
+   Apple ID ▸ Trust**.
+
+Free provisioning expires after 7 days — run again to renew.
+
+## 5. Get a model (in the app)
+
+**⋯ menu ▸ Models**, or **Settings ▸ On-board model ▸ Model**:
+
+| Model | Size | Good for |
+|---|---|---|
+| Qwen 2.5 1.5B Instruct Q4_K_M | ~1.1 GB | recommended, best quality |
+| Qwen 2.5 Coder 1.5B Q4_K_M | ~1.1 GB | code questions |
+| Qwen 2.5 0.5B Instruct Q4_K_M | ~400 MB | older / 4 GB devices |
+| SmolLM2 360M Q8_0 | ~390 MB | very fast, simple answers |
+| SmolLM2 135M Q8_0 | ~145 MB | smallest |
+
+Tap **Get** to download (pause/resume supported, progress shown), then tap the
+model to select it. **Import .gguf** in the toolbar adds any file from the
+Files app. Swipe a model to delete it. Downloads are stored in the app's
+Application Support folder and excluded from iCloud backup.
+
+Memory guide: a 1.5B Q4_K_M needs roughly **2 GB free RAM** while answering —
+comfortable on iPhone 15 Pro / 16 and newer, tight on 4 GB devices (use 0.5B).
+
+## 6. Switch engines
+
+**Settings ▸ Answers come from**: *Apple* or *On-board*. The chat screen shows
+a banner with a **Get a model** shortcut whenever the selected engine isn't
+ready yet.
+
+## Developing
 
 | Task | Command |
 |---|---|
 | Added/removed a `.swift` file | `swift Tools/GenerateProject.swift` |
 | Changed the icon artwork | `swift Tools/GenerateIcons.swift` |
-| Build from the command line | `xcodebuild -project KocharianAI.xcodeproj -scheme KocharianAI -sdk iphonesimulator build` |
-
-`Tools/GenerateProject.swift` rebuilds `project.pbxproj` and the shared scheme
-from the contents of `KocharianAI/`, with stable MD5-derived object ids — so
-you never have to hand-edit the project file or resolve merge conflicts in it.
+| CLI build | `xcodebuild -project KocharianAI.xcodeproj -scheme KocharianAI -sdk iphonesimulator build` |
 
 ## Troubleshooting
 
-* **“Untrusted Developer”** — step 4.4 above.
-* **“Unable to install … device not eligible”** — enable Developer Mode.
-* **Chat says Apple Intelligence is unavailable** — the device or OS doesn't
-  support it; switch to the *Server* engine.
-* **Server engine can't connect** — check both devices are on the same Wi-Fi,
-  that the server listens on `0.0.0.0` (not `127.0.0.1`), and that the Mac
-  firewall allows incoming connections on that port.
-* **Voice notes come back empty** — Settings ▸ Kocharian AI ▸ Speech
-  Recognition must be allowed; the first on-device model download needs Wi-Fi.
+* **“The llama.cpp framework isn’t linked yet.”** — do step 2.
+* **Download stops at a few KB** — the Hugging Face URL redirected to an error
+  page; check Wi-Fi, then retry. Any direct `.gguf` link works via *Import*.
+* **App is killed while answering** — the model is too large for the device:
+  pick a smaller one or lower *Max new tokens* / context.
+* **Apple engine says unavailable** — needs iOS 26+, an Apple Intelligence
+  capable device, and Apple Intelligence switched on in iOS Settings.
+* **Voice notes empty** — allow Speech Recognition in iOS Settings for the app.

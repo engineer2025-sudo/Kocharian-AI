@@ -28,6 +28,7 @@ struct EngineRequest {
     var settings: AppSettings.Snapshot
 }
 
+@MainActor
 protocol ChatEngine: AnyObject {
     var displayName: String { get }
     /// Human readable reason the engine cannot be used right now, or `nil`.
@@ -45,19 +46,19 @@ extension ChatEngine {
 final class EngineRouter {
     static let shared = EngineRouter()
 
-    private let onDevice = AppleIntelligenceEngine()
-    private let localServer = LocalLLMEngine()
+    private let appleIntelligence = AppleIntelligenceEngine()
+    private let onboard = OnboardModelEngine()
 
     func engine(for kind: EngineKind) -> ChatEngine {
         switch kind {
-        case .onDevice: return onDevice
-        case .localServer: return localServer
+        case .appleIntelligence: return appleIntelligence
+        case .onboard: return onboard
         }
     }
 
     func forget(conversation id: UUID) {
-        onDevice.forget(conversation: id)
-        localServer.forget(conversation: id)
+        appleIntelligence.forget(conversation: id)
+        onboard.forget(conversation: id)
     }
 
     /// `nil` when the selected engine is ready to answer.

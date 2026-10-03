@@ -6,6 +6,7 @@ import FoundationModels
 /// Talks to Apple's on-device foundation model (iOS 26+).
 ///
 /// Nothing leaves the phone: no server, no API key, no network.
+@MainActor
 final class AppleIntelligenceEngine: ChatEngine {
     let displayName = "Apple Intelligence"
 
@@ -22,10 +23,10 @@ final class AppleIntelligenceEngine: ChatEngine {
         if #available(iOS 26.0, macOS 26.0, *) {
             return Self.availabilityMessage()
         } else {
-            return "On-device chat needs iOS 26 or later. Switch to the “Local LLM server” engine in Settings."
+            return "On-device chat needs iOS 26 or later. Switch to the “On-board” engine in Settings and download a model."
         }
         #else
-        return "This build was compiled without the FoundationModels SDK. Switch to the “Local LLM server” engine in Settings."
+        return "This build was compiled without the FoundationModels SDK. Switch to the “On-board” engine in Settings and download a model."
         #endif
     }
 
@@ -61,7 +62,7 @@ final class AppleIntelligenceEngine: ChatEngine {
         case .unavailable(let reason):
             switch reason {
             case .deviceNotEligible:
-                return "This device doesn’t support Apple Intelligence. Switch to the “Local LLM server” engine in Settings to use the Qwen model on your computer."
+                return "This device doesn’t support Apple Intelligence. Switch to the “On-board” engine in Settings and download Qwen 2.5 1.5B Instruct."
             case .appleIntelligenceNotEnabled:
                 return "Apple Intelligence is turned off. Enable it in Settings ▸ Apple Intelligence & Siri, then come back."
             case .modelNotReady:

@@ -67,7 +67,7 @@ var sourcePhase: [String] = []
 var resourcePhase: [String] = []
 var groups: [String: [String]] = [:]
 
-for rel in sources + resources + ["Info.plist"] {
+for rel in sources + resources + ["Info.plist", "KocharianAI.entitlements"] {
     let parts = rel.split(separator: "/").map(String.init)
     let name = parts.last ?? rel
     let folder = parts.count > 1 ? parts.dropLast().joined(separator: "/") : ""
@@ -75,6 +75,7 @@ for rel in sources + resources + ["Info.plist"] {
     let kind: String
     if name.hasSuffix(".swift") { kind = "sourcecode.swift" }
     else if name.hasSuffix(".xcassets") { kind = "folder.assetcatalog" }
+    else if name.hasSuffix(".entitlements") { kind = "text.plist.entitlements" }
     else { kind = "text.plist.xml" }
 
     fileRefs.append("\t\t\(fid) /* \(name) */ = {isa = PBXFileReference; lastKnownFileType = \(kind); path = \(name); sourceTree = \"<group>\"; };")
@@ -141,6 +142,7 @@ let common = """
 let targetCommon = """
 \t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 \t\t\t\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+\t\t\t\tCODE_SIGN_ENTITLEMENTS = \(app)/KocharianAI.entitlements;
 \t\t\t\tCODE_SIGN_STYLE = Automatic;
 \t\t\t\tCURRENT_PROJECT_VERSION = 1;
 \t\t\t\tENABLE_PREVIEWS = YES;
