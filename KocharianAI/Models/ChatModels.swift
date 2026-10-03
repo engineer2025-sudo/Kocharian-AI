@@ -85,8 +85,6 @@ struct Conversation: Identifiable, Codable, Hashable {
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
     var pinned: Bool = false
-    /// Conversation id on the Kocharian server, when the server backend is used.
-    var remoteID: String?
 
     var preview: String {
         messages.last(where: { $0.role != .system })?.content

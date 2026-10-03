@@ -40,12 +40,16 @@ struct SettingsView: View {
                     Text("Model")
                 }
 
-                if settings.engine == .server {
+                if settings.engine == .localServer {
                     Section {
-                        TextField("http://192.168.1.42:3000", text: $settings.serverURL)
+                        TextField("http://192.168.1.42:8080", text: $settings.serverURL)
                             .keyboardType(.URL)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
+                        TextField("Model name (optional)", text: $settings.modelName)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                        SecureField("API key (optional)", text: $settings.apiKey)
                         Button {
                             Task { await testConnection() }
                         } label: {
@@ -70,7 +74,7 @@ struct SettingsView: View {
                     } header: {
                         Text("Server")
                     } footer: {
-                        Text("Run `npm start` in the Kocharian-AI folder on your computer, then enter the LAN address it prints. Phone and computer must share a Wi-Fi network.")
+                        Text("Any OpenAI-compatible server works: llama.cpp (`llama-server -m qwen2.5-1.5b-instruct-q4_k_m.gguf --port 8080`), LM Studio, Ollama (`http://mac.local:11434/v1`) or vLLM. Phone and computer must share a Wi-Fi network.")
                     }
                 }
 
@@ -133,7 +137,7 @@ struct SettingsView: View {
 
     private func testConnection() async {
         probeState = .testing
-        let engine = EngineRouter.shared.engine(for: .server) as? KocharianServerEngine
+        let engine = EngineRouter.shared.engine(for: .localServer) as? LocalLLMEngine
         let url = settings.normalizedServerURL
         guard let engine, !url.isEmpty else {
             probeState = .failed("Enter an address first")

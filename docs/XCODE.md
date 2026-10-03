@@ -1,110 +1,95 @@
-# Kocharian AI for iPhone — open in Xcode and install
+# Open in Xcode and install on your iPhone
 
-`ios/KocharianAI.xcodeproj` is a **100 % native Swift app**. No web view, no
-JavaScript, no embedded browser — SwiftUI screens, Swift concurrency, and
-Apple's own on-device frameworks:
+Kocharian AI is a pure Swift iOS app — the repository contains nothing but
+Swift sources, the asset catalog, `Info.plist` and the Xcode project.
 
-| Feature | Framework |
-|---|---|
-| Chat answers | **FoundationModels** — Apple's on-device LLM (iOS 26+) |
-| Chat answers (fallback / bigger model) | Your Kocharian server running Qwen 1.5B Q4_K_M, over SSE |
-| Reading text in photos | **Vision** (`VNRecognizeTextRequest`) |
-| Voice notes → text | **Speech** (`SFSpeechRecognizer`, on-device when supported) |
-| Documents | **PDFKit** |
-| Recording | **AVFoundation** |
-| Storage | `Codable` JSON in the app container |
+## 1. Requirements
 
-Everything stays on the phone (or on your own computer, if you choose the
-server engine).
+* A Mac with **Xcode 16 or later**
+* An iPhone or iPad on **iOS 16+** (the on-device Apple Intelligence engine
+  needs iOS 26+ on a supported device)
+* An Apple ID — the **free** one works
 
-## 1. Open it
+## 2. Open the project
 
 ```bash
 git clone https://github.com/engineer2025-sudo/Kocharian-AI.git
 cd Kocharian-AI
-open ios/KocharianAI.xcodeproj
+open KocharianAI.xcodeproj
 ```
 
-Needs macOS with **Xcode 16 or later**. Deployment target is iOS 16; the
-on-device Apple Intelligence engine lights up on iOS 26+ devices.
+(Or Xcode ▸ File ▸ Open… and select `KocharianAI.xcodeproj` in the repo root.)
 
-## 2. Signing (free Apple ID works)
+## 3. Set signing
 
-1. Select the blue **KocharianAI** project → target **KocharianAI** →
-   **Signing & Capabilities**.
-2. Tick *Automatically manage signing* and pick your **Team**
-   (add your Apple ID in Xcode ▸ Settings ▸ Accounts).
-3. If the bundle id is taken, change `com.kocharian.ai` →
-   `com.yourname.kocharian`.
+1. Click the blue **KocharianAI** project in the navigator.
+2. Select the **KocharianAI** target → **Signing & Capabilities**.
+3. Tick **Automatically manage signing**.
+4. **Team** → choose your Apple ID (add it under Xcode ▸ Settings ▸ Accounts ▸ +).
+5. If Xcode says the bundle identifier is unavailable, change
+   `com.kocharian.ai` to something unique such as `com.yourname.kocharian`.
 
-## 3. Run on the phone
+## 4. Run on the device
 
-1. iPhone: **Settings ▸ Privacy & Security ▸ Developer Mode → On**, reboot.
-2. Plug the phone in, select it in Xcode's device menu, press **⌘R**.
-3. First install only: **Settings ▸ General ▸ VPN & Device Management ▸
-   your Apple ID ▸ Trust**.
+1. iPhone: **Settings ▸ Privacy & Security ▸ Developer Mode → On** (iOS 16+),
+   then restart the phone.
+2. Connect the iPhone by cable (or Window ▸ Devices and Simulators ▸
+   *Connect via network*).
+3. Pick the device in the toolbar's run destination menu and press **⌘R**.
+4. First install only: on the phone open
+   **Settings ▸ General ▸ VPN & Device Management ▸ your Apple ID ▸ Trust**,
+   then launch the app again.
 
-Free-account provisioning expires after 7 days — press Run again to refresh.
+Free provisioning profiles expire after **7 days** — press Run again to renew.
+A paid Apple Developer account extends this to a year and unlocks TestFlight.
 
-## 4. Pick the engine (Settings ▸ Model)
+## 5. Choose how it answers — Settings ▸ Model
 
-* **On-device** — zero setup on an Apple Intelligence iPhone (15 Pro and newer,
-  iOS 26+, Apple Intelligence enabled). Fully offline, airplane-mode friendly.
-* **Server** — start the repo's Node server on your computer:
+### On-device (recommended, zero setup)
 
-  ```bash
-  npm install && npm start      # first run downloads Qwen 1.5B Q4_K_M (~1.1 GB)
-  ```
+Uses Apple's **FoundationModels** framework. Requires iOS 26 or later on an
+Apple Intelligence capable device with Apple Intelligence enabled. Works in
+airplane mode. If the device isn't eligible, the Settings screen tells you why.
 
-  Enter the LAN address it prints (e.g. `192.168.1.42:3000`) and tap
-  **Test connection**. Phone and computer must share one Wi-Fi network;
-  `NSAllowsLocalNetworking` is already set, so plain HTTP on the LAN is allowed.
+### Local LLM server (any model you like, e.g. Qwen 1.5B Q4_K_M)
 
-## What's in the app
-
-```
-ios/KocharianAI/
-├── KocharianAIApp.swift          @main, injects the stores
-├── Models/
-│   ├── ChatModels.swift          Conversation, ChatMessage, Attachment (Codable)
-│   ├── ChatStore.swift           persistence, search, pin, rename, truncate
-│   ├── ChatViewModel.swift       send / stop / regenerate / edit-and-resend
-│   └── AppSettings.swift         engine, server URL, temperature, system prompt
-├── Engines/
-│   ├── ChatEngine.swift          protocol + EngineRouter
-│   ├── AppleIntelligenceEngine.swift   FoundationModels streaming
-│   └── KocharianServerEngine.swift     SSE client for /api/chat
-├── Services/
-│   ├── AttachmentService.swift   Vision OCR · Speech · PDFKit
-│   └── AudioRecorder.swift       AVAudioRecorder + level meter
-└── Views/                        SwiftUI: chat, composer, sidebar, settings,
-                                  Markdown + code blocks, camera picker
-```
-
-Features: streaming token-by-token answers, stop, regenerate, edit & resend,
-copy, swipe to pin/rename/delete, chat search, Markdown rendering with
-copyable code blocks, Share-sheet export to Markdown, photo/camera/file/voice
-attachments with on-device text extraction, light & dark mode, iPad split view.
-
-### Adding a Swift file
-
-The project file is generated, so after adding or deleting sources run:
+Run an OpenAI-compatible server on a computer on the same Wi-Fi:
 
 ```bash
-python3 scripts/gen-ios-project.py
+# llama.cpp
+llama-server -m qwen2.5-1.5b-instruct-q4_k_m.gguf --host 0.0.0.0 --port 8080
+
+# or LM Studio  → enable the local server
+# or Ollama     → http://<mac>.local:11434/v1
 ```
 
-(It rebuilds `project.pbxproj` and the shared scheme from the folder tree.)
+In the app: **Settings ▸ Server**, enter `http://192.168.1.42:8080`
+(the model name and API key fields are optional), then **Test connection**.
 
-### App icon
+Permissions the app may ask for: microphone (voice notes), speech recognition
+(transcripts), camera / photo library (image attachments), local network
+(server engine). All are declared in `KocharianAI/Info.plist`.
 
-`python3 scripts/make-icons.py` regenerates both the iOS asset-catalog icon and
-the web icons in `public/icons/`.
+## 6. Developing
 
----
+| Task | Command |
+|---|---|
+| Added/removed a `.swift` file | `swift Tools/GenerateProject.swift` |
+| Changed the icon artwork | `swift Tools/GenerateIcons.swift` |
+| Build from the command line | `xcodebuild -project KocharianAI.xcodeproj -scheme KocharianAI -sdk iphonesimulator build` |
 
-## Don't have a Mac?
+`Tools/GenerateProject.swift` rebuilds `project.pbxproj` and the shared scheme
+from the contents of `KocharianAI/`, with stable MD5-derived object ids — so
+you never have to hand-edit the project file or resolve merge conflicts in it.
 
-The web app is also an installable PWA: run `npm start`, open the LAN URL in
-Safari on the iPhone, then Share ⬆ → **Add to Home Screen**. Android Chrome:
-⋮ → **Install app**.
+## Troubleshooting
+
+* **“Untrusted Developer”** — step 4.4 above.
+* **“Unable to install … device not eligible”** — enable Developer Mode.
+* **Chat says Apple Intelligence is unavailable** — the device or OS doesn't
+  support it; switch to the *Server* engine.
+* **Server engine can't connect** — check both devices are on the same Wi-Fi,
+  that the server listens on `0.0.0.0` (not `127.0.0.1`), and that the Mac
+  firewall allows incoming connections on that port.
+* **Voice notes come back empty** — Settings ▸ Kocharian AI ▸ Speech
+  Recognition must be allowed; the first on-device model download needs Wi-Fi.

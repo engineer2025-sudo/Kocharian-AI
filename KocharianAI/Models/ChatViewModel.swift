@@ -71,9 +71,6 @@ final class ChatViewModel: ObservableObject {
 
     func resetContext(store: ChatStore, conversationID: Conversation.ID) {
         router.forget(conversation: conversationID)
-        if let idx = store.index(of: conversationID) {
-            store.conversations[idx].remoteID = nil
-        }
     }
 
     // MARK: - Core loop
@@ -103,7 +100,6 @@ final class ChatViewModel: ObservableObject {
         statusText = "Thinking…"
 
         let request = EngineRequest(conversationID: conversationID,
-                                    remoteID: conversation.remoteID,
                                     history: conversation.messages.filter { $0.role != .system },
                                     settings: snapshot)
 
@@ -116,8 +112,6 @@ final class ChatViewModel: ObservableObject {
                     switch event {
                     case .status(let text):
                         self.statusText = text
-                    case .remoteID(let id):
-                        store.setRemoteID(id, for: conversationID)
                     case .token(let delta):
                         buffer += delta
                         self.statusText = nil

@@ -116,16 +116,6 @@ final class ChatStore: ObservableObject {
         scheduleSave()
     }
 
-    func setRemoteID(_ remoteID: String, for id: Conversation.ID) {
-        guard let idx = index(of: id) else { return }
-        conversations[idx].remoteID = remoteID
-        scheduleSave()
-    }
-
-    func clearRemoteIDs() {
-        for idx in conversations.indices { conversations[idx].remoteID = nil }
-        scheduleSave()
-    }
 
     // MARK: - Persistence
 

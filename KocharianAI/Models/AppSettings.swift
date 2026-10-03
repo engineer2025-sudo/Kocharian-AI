@@ -5,22 +5,23 @@ import SwiftUI
 enum EngineKind: String, CaseIterable, Identifiable, Codable {
     /// Apple's on-device foundation model (iOS 26+, Apple Intelligence devices).
     case onDevice
-    /// The Kocharian AI server (`npm start`) running the Qwen GGUF model.
-    case server
+    /// Any OpenAI-compatible server you run yourself (llama.cpp, LM Studio,
+    /// Ollama…) hosting a model such as Qwen 1.5B Instruct Q4_K_M.
+    case localServer
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .onDevice: return "On-device (Apple Intelligence)"
-        case .server: return "Kocharian server (Qwen GGUF)"
+        case .localServer: return "Local LLM server (Qwen GGUF)"
         }
     }
 
     var shortTitle: String {
         switch self {
         case .onDevice: return "On-device"
-        case .server: return "Server"
+        case .localServer: return "Server"
         }
     }
 
@@ -28,8 +29,8 @@ enum EngineKind: String, CaseIterable, Identifiable, Codable {
         switch self {
         case .onDevice:
             return "Runs entirely on this iPhone. Needs iOS 26 or later on an Apple Intelligence capable device. Nothing leaves the phone."
-        case .server:
-            return "Streams from the Qwen 1.5B model on your own computer over Wi-Fi. Start it with `npm start` and enter the address below."
+        case .localServer:
+            return "Streams from a model you host yourself — llama.cpp, LM Studio or Ollama serving Qwen 1.5B — over your own Wi-Fi."
         }
     }
 }
@@ -41,6 +42,8 @@ final class AppSettings: ObservableObject {
 
     @Published var engineRaw: String { didSet { defaults.set(engineRaw, forKey: Key.engine) } }
     @Published var serverURL: String { didSet { defaults.set(serverURL, forKey: Key.serverURL) } }
+    @Published var modelName: String { didSet { defaults.set(modelName, forKey: Key.modelName) } }
+    @Published var apiKey: String { didSet { defaults.set(apiKey, forKey: Key.apiKey) } }
     @Published var systemPrompt: String { didSet { defaults.set(systemPrompt, forKey: Key.systemPrompt) } }
     @Published var temperature: Double { didSet { defaults.set(temperature, forKey: Key.temperature) } }
     @Published var maxTokens: Int { didSet { defaults.set(maxTokens, forKey: Key.maxTokens) } }
@@ -49,6 +52,8 @@ final class AppSettings: ObservableObject {
     private enum Key {
         static let engine = "engineKind"
         static let serverURL = "serverURL"
+        static let modelName = "modelName"
+        static let apiKey = "apiKey"
         static let systemPrompt = "systemPrompt"
         static let temperature = "temperature"
         static let maxTokens = "maxTokens"
@@ -59,6 +64,8 @@ final class AppSettings: ObservableObject {
         self.defaults = defaults
         engineRaw = defaults.string(forKey: Key.engine) ?? EngineKind.onDevice.rawValue
         serverURL = defaults.string(forKey: Key.serverURL) ?? ""
+        modelName = defaults.string(forKey: Key.modelName) ?? "qwen2.5-1.5b-instruct"
+        apiKey = defaults.string(forKey: Key.apiKey) ?? ""
         systemPrompt = defaults.string(forKey: Key.systemPrompt) ?? AppSettings.defaultSystemPrompt
         temperature = defaults.object(forKey: Key.temperature) as? Double ?? 0.7
         maxTokens = defaults.object(forKey: Key.maxTokens) as? Int ?? 768
@@ -86,7 +93,7 @@ final class AppSettings: ObservableObject {
         }
         while value.hasSuffix("/") { value.removeLast() }
         if let url = URL(string: value), url.port == nil, !value.lowercased().hasPrefix("https://") {
-            value += ":3000"
+            value += ":8080"
         }
         return value
     }
@@ -94,6 +101,8 @@ final class AppSettings: ObservableObject {
     struct Snapshot {
         var engine: EngineKind
         var serverURL: String
+        var modelName: String
+        var apiKey: String
         var systemPrompt: String
         var temperature: Double
         var maxTokens: Int
@@ -102,6 +111,8 @@ final class AppSettings: ObservableObject {
     var snapshot: Snapshot {
         Snapshot(engine: engine,
                  serverURL: normalizedServerURL,
+                 modelName: modelName,
+                 apiKey: apiKey,
                  systemPrompt: systemPrompt,
                  temperature: temperature,
                  maxTokens: maxTokens)

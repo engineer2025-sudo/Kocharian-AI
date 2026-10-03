@@ -5,8 +5,6 @@ enum EngineEvent {
     case status(String)
     /// Incremental text (delta, not cumulative).
     case token(String)
-    /// Server-side conversation id, so follow-up turns keep their context.
-    case remoteID(String)
     case done(text: String, tokensPerSecond: Double?)
 }
 
@@ -25,7 +23,6 @@ enum EngineError: LocalizedError {
 
 struct EngineRequest {
     var conversationID: UUID
-    var remoteID: String?
     /// Full history, oldest first, already including the new user turn.
     var history: [ChatMessage]
     var settings: AppSettings.Snapshot
@@ -49,18 +46,18 @@ final class EngineRouter {
     static let shared = EngineRouter()
 
     private let onDevice = AppleIntelligenceEngine()
-    private let server = KocharianServerEngine()
+    private let localServer = LocalLLMEngine()
 
     func engine(for kind: EngineKind) -> ChatEngine {
         switch kind {
         case .onDevice: return onDevice
-        case .server: return server
+        case .localServer: return localServer
         }
     }
 
     func forget(conversation id: UUID) {
         onDevice.forget(conversation: id)
-        server.forget(conversation: id)
+        localServer.forget(conversation: id)
     }
 
     /// `nil` when the selected engine is ready to answer.
